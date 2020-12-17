@@ -18,7 +18,7 @@ class Welcome(commands.Cog):
             await channel.send(embed=block_embed)
 
     @commands.command()
-    async def m_list_welcome_blocks(self, ctx):
+    async def m_list_wb(self, ctx):
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
@@ -32,7 +32,7 @@ class Welcome(commands.Cog):
         await ctx.send(send_string)
 
     @commands.command()
-    async def m_make_welcome_block(self, ctx):
+    async def m_make_wb(self, ctx):
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
@@ -82,7 +82,7 @@ class Welcome(commands.Cog):
         await ctx.send('Block formation process completed.')
 
     @commands.command()
-    async def m_preview_welcome_block(self, ctx):
+    async def m_preview_wb(self, ctx):
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
@@ -102,7 +102,7 @@ class Welcome(commands.Cog):
         await send_block(data_dict, ctx)
 
     @commands.command()
-    async def m_view_welcome_block_queue(self, ctx):
+    async def m_view_wb_queue(self, ctx):
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
@@ -116,7 +116,7 @@ class Welcome(commands.Cog):
                 await ctx.send(block)
 
     @commands.command()
-    async def m_add_welcome_block_to_queue(self, ctx):
+    async def m_add_wb_to_queue(self, ctx):
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
@@ -152,7 +152,7 @@ class Welcome(commands.Cog):
             await send_block(data_dict, ctx)
 
     @commands.command()
-    async def m_remove_welcome_block_from_queue(self, ctx):
+    async def m_remove_wb_from_queue(self, ctx):
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
