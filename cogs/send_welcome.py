@@ -17,10 +17,12 @@ class Welcome(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
         
+        send_string = ''
         for welcome_block in os.listdir('server_specific/welcome_blocks'):
             if welcome_block.startswith('_'):
                 continue
-            await ctx.send(welcome_block.replace('.json', ''))
+            send_string += welcome_block.replace('.json', '') + '\n'
+            await ctx.send(send_string)
 
     @commands.command()
     async def m_make_welcome_block(self, ctx):
