@@ -11,15 +11,6 @@ class Welcome(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def m_send_welcome(self, ctx):
-        if not await is_moderator(ctx):
-            return
-
-        if not await is_mod_commands_channel(ctx):
-            return
-        
-
-    @commands.command()
     async def m_list_welcome_blocks(self, ctx):
         if not await is_moderator(ctx):
             return
