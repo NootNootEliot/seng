@@ -10,6 +10,13 @@ class Welcome(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    async def send_block(data_dict, channel):
+        if data_dict['type'] == 'text':
+            await channel.send(data_dict['text'])
+        elif data_dict['type'] == 'embed':
+            block_embed = discord.Embed.from_dict(data_dict['embed_dict'])
+            await channel.send(embed=block_embed)
+
     @commands.command()
     async def m_list_welcome_blocks(self, ctx):
         if not await is_moderator(ctx):
@@ -92,11 +99,7 @@ class Welcome(commands.Cog):
         with open(Path(block_path), 'r') as block_file:
             data_dict = json.loads(block_file.read())
 
-        if data_dict['type'] == 'text':
-            await ctx.send(data_dict['text'])
-        elif data_dict['type'] == 'embed':
-            block_embed = discord.Embed.from_dict(data_dict['embed_dict'])
-            await ctx.send(embed=block_embed)
+        await send_block(data_dict, ctx)
 
     @commands.command()
     async def m_view_welcome_block_queue(self, ctx):
@@ -146,12 +149,8 @@ class Welcome(commands.Cog):
             with open(Path(block_path), 'r') as block_file:
                 data_dict = json.loads(block_file.read())
 
-            if data_dict['type'] == 'text':
-                await ctx.send(data_dict['text'])
-            elif data_dict['type'] == 'embed':
-                block_embed = discord.Embed.from_dict(data_dict['embed_dict'])
-                await ctx.send(embed=block_embed)
- 
+            await send_block(data_dict, ctx)
+
     @commands.command()
     async def m_remove_welcome_block_from_queue(self, ctx):
         if not await is_moderator(ctx):
@@ -202,9 +201,4 @@ class Welcome(commands.Cog):
             with open(Path(block_path), 'r') as block_file:
                 data_dict = json.loads(block_file.read())
 
-            if data_dict['type'] == 'text':
-                await welcome_channel.send(data_dict['text'])
-            elif data_dict['type'] == 'embed':
-                block_embed = discord.Embed.from_dict(data_dict['embed_dict'])
-                await welcome_channel.send(embed=block_embed)
-
+            await send_block(data_dict, welcome_channel)
