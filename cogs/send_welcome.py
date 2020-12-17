@@ -29,7 +29,7 @@ class Welcome(commands.Cog):
             if welcome_block.startswith('_'):
                 continue
             send_string += welcome_block.replace('.json', '') + '\n'
-            await ctx.send(send_string)
+        await ctx.send(send_string)
 
     @commands.command()
     async def m_make_welcome_block(self, ctx):
@@ -157,6 +157,7 @@ class Welcome(commands.Cog):
             return
         if not await is_mod_commands_channel(ctx):
             return
+
         await ctx.send('What block would you like to remove from the queue?')
         def check(m):
             return True
@@ -165,13 +166,13 @@ class Welcome(commands.Cog):
         with open(Path(block_queue_path), 'r') as block_queue_file:
             blocks = block_queue_file.read().splitlines()
         
-        open(Path(block_queue_path), 'w').close()
+        open(Path(block_queue_path), 'w').close()  # Erase entire file
 
         with open(Path(block_queue_path), 'a') as block_queue_file:
             for block in blocks:
                 if block == rem_block_msg.content:
                     continue
-                block_queue_file.write(block)
+                block_queue_file.write(block + '\n')
         await ctx.send('Block removed.')
 
     @commands.command()
