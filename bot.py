@@ -8,7 +8,6 @@ from cogs.validation import ModeratorChecking
 from cogs.error_handler import CommandErrorHandler
 from cogs.help import GetHelp
 from cogs.member_stats import MemberStats
-# from .validation import is_moderator, is_mod_commands_channel
 
 intents = discord.Intents.default()
 intents.members = True
@@ -24,6 +23,7 @@ with open(Path('./private/priv_data.json'), 'r') as data_file:
     token = json.loads(data_file.read())['TOKEN']
 
 bot.remove_command('help')  # Overwrite normal 'help' command
+#bot.add_cog(CommandErrorHandler(bot))
 bot.add_cog(MemberStats(bot))
 bot.add_cog(Greetings(bot))
 bot.add_cog(Welcome(bot))

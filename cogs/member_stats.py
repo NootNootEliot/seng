@@ -8,7 +8,7 @@ class MemberStats(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def mstats(self, ctx):
+    async def m_stats(self, ctx):
         
         if not await is_moderator(ctx):
            return
@@ -32,7 +32,3 @@ class MemberStats(commands.Cog):
 
             await ctx.send(f'Total members: {true_member_count}')
             await ctx.send(f'Online members: {member_online_count}')
-
-class Greetings(commands.Cog):
-    def __init__(self, bot):
-        pass
