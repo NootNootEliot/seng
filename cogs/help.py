@@ -12,6 +12,7 @@ class GetHelp(commands.Cog):
             'All commands are prefixed with `$`.\n'
             '`hello` - Say \'hello\' to Seng!\n'
             '`privacy_policy` - View Seng\'s privacy policy.\n'
+            '`source_code` - View Seng\'s source code.\n'
         )
         await ctx.send(help_string)
 
