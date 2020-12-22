@@ -42,28 +42,27 @@ if yes_no.lower() in ['n', 'no']:
     print('Exiting.')
     sys.exit()
 
-if yes_no.lower() in ['y', 'yes']:
-    if os.path.basename(os.path.normpath(os.getcwd())) != 'seng':
-        print('Error: Script must be ran inside \'seng/\' directory.')
-        print('Exiting.')
-        sys.exit()
+if os.path.basename(os.path.normpath(os.getcwd())) != 'seng':
+    print('Error: Script must be ran inside \'seng/\' directory.')
+    print('Exiting.')
+    sys.exit()
 
-    try:
-        os.mkdir(Path('./data_pack'))
-    except FileExistsError:
-        print('data_pack already exists. Please delete it and try again.')
-        print('Exiting.')
-        sys.exit()
+try:
+    os.mkdir(Path('./data_pack'))
+except FileExistsError:
+    print('data_pack already exists. Please delete it and try again.')
+    print('Exiting.')
+    sys.exit()
 
-    for req_dir in required_directories:
-        os.mkdir(os.path.join(Path('./data_pack'), 'server_specific'))
+for req_dir in required_directories:
+    os.mkdir(os.path.join(Path('./data_pack'), 'server_specific'))
 
-    for file_path in files_to_save:
-        dest_path = Path(os.path.join('./data_pack', file_path))
-        shutil.copy(Path(file_path), dest_path)
+for file_path in files_to_save:
+    dest_path = Path(os.path.join('./data_pack', file_path))
+    shutil.copy(Path(file_path), dest_path)
 
-    for dir_path in directories_to_save:
-        dest_path = Path(os.path.join('./data_pack', dir_path))
-        shutil.copytree(Path(dir_path), dest_path)
+for dir_path in directories_to_save:
+    dest_path = Path(os.path.join('./data_pack', dir_path))
+    shutil.copytree(Path(dir_path), dest_path)
 
-    print('Success - data pack created.')
+print('Success - data pack created.')
