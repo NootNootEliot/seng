@@ -25,8 +25,8 @@ if len(sys.argv) > 1:
     if sys.argv[1].lower() in ['help', 'h']:
         print(
             'This script will create a directory, \'data_pack\', which will '
-            'the necessary files to keep Seng running effectively on the ANN '
-            'Discord serer.'
+            'contain the necessary files to keep Seng running effectively on '
+            'the ANN Discord serer.'
         )
         sys.exit()
     else:
