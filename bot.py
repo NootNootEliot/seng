@@ -8,6 +8,7 @@ from cogs.validation import ModeratorChecking
 from cogs.error_handler import CommandErrorHandler
 from cogs.help import GetHelp
 from cogs.member_stats import MemberStats
+from cogs.seng_info import PrivacyPolicy
 
 intents = discord.Intents.default()
 intents.members = True
@@ -29,4 +30,5 @@ bot.add_cog(Greetings(bot))
 bot.add_cog(Welcome(bot))
 bot.add_cog(ModeratorChecking(bot))
 bot.add_cog(GetHelp(bot))
+bot.add_cog(PrivacyPolicy(bot))
 bot.run(token)
