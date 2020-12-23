@@ -5,7 +5,11 @@ on:
     branches: 
     - main
   pull_request:
-    branches: 
+    types: 
+    - opened
+    - edited
+    - reopened
+    branches:
     - main
 
 jobs:
