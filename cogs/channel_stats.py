@@ -3,13 +3,13 @@ from pathlib import Path
 from .validation import is_moderator, is_mod_commands_channel
 import json
 
+
 class ChannelStats(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     @commands.command()
     async def m_cp_stats(self, ctx):
-
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
@@ -22,4 +22,6 @@ class ChannelStats(commands.Cog):
             await ctx.send(f"Posts in {guild}:")
             for channel_count, channel in enumerate(guild.text_channels):
                 msg_count = len(await channel.history(limit=None).flatten())
-                await ctx.send(f"{channel_count + 1}. {channel.mention} : {msg_count}")
+                await ctx.send(
+                    f'{channel_count + 1}. {channel.mention} : {msg_count}'
+                )

@@ -43,11 +43,11 @@ class ModeratorChecking(commands.Cog):
 
         with open(Path('server_specific/moderators.txt'), 'r') as mod_file:
             moderator_ids = mod_file.readlines()
-        
+
         for moderator_id in moderator_ids:
             moderator = self.bot.get_user(int(moderator_id))
             if not moderator:
                 await ctx.send('Unknown')
             else:
-                await ctx.send(moderator.name) 
+                await ctx.send(moderator.name)
         await ctx.send('Finished!')
