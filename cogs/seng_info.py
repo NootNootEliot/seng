@@ -19,7 +19,7 @@ class PrivacyPolicy(commands.Cog):
             description=priv_pol_text,
             colour=discord.Color.teal()
         )
-        await ctx.send(embed=priv_pol)
+        await ctx.send(embed=priv_pol_embed)
 
     @commands.command()
     async def source_code(self, ctx):
