@@ -17,7 +17,6 @@ class Welcome(commands.Cog):
 
         if not await is_mod_commands_channel(ctx):
             return
-        
 
     @commands.command()
     async def m_list_welcome_blocks(self, ctx):
@@ -25,7 +24,7 @@ class Welcome(commands.Cog):
             return
         if not await is_mod_commands_channel(ctx):
             return
-        
+
         for welcome_block in os.listdir('server_specific/welcome_blocks'):
             if welcome_block.startswith('_'):
                 continue
@@ -37,10 +36,12 @@ class Welcome(commands.Cog):
             return
         if not await is_mod_commands_channel(ctx):
             return
-        
+
         await ctx.send('Please enter the name of the block:')
+
         def check(m):
             return True
+
         name_msg = await self.bot.wait_for('message', check=check)
 
         await ctx.send('What block is this? e.g. \'text\' or \'embed\'')
@@ -56,7 +57,7 @@ class Welcome(commands.Cog):
             embed_descrip_msg = await self.bot.wait_for('message', check=check)
             await ctx.send('Please enter the colour for the embed.')
             colour_msg = await self.bot.wait_for('message', check=check)
-        
+
         data_dict = {}
         data_dict['title'] = name_msg.content
         data_dict['type'] = type_msg.content
@@ -89,8 +90,10 @@ class Welcome(commands.Cog):
             return
 
         await ctx.send('What block would you like to search for?')
+
         def check(m):
             return True
+
         name_msg = await self.bot.wait_for('message', check=check)
         block_path = os.path.join(
                 'server_specific/welcome_blocks',
@@ -126,8 +129,10 @@ class Welcome(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
         await ctx.send('What block would you like to add to the queue?')
+
         def check(m):
             return True
+
         add_block_msg = await self.bot.wait_for('message', check=check)
         block_queue_path = 'server_specific/welcome_blocks/_block_queue'
         with open(Path(block_queue_path), 'a+') as block_queue_file:
@@ -158,7 +163,7 @@ class Welcome(commands.Cog):
             elif data_dict['type'] == 'embed':
                 block_embed = discord.Embed.from_dict(data_dict['embed_dict'])
                 await ctx.send(embed=block_embed)
- 
+
     @commands.command()
     async def m_remove_welcome_block_from_queue(self, ctx):
         if not await is_moderator(ctx):
@@ -166,13 +171,15 @@ class Welcome(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
         await ctx.send('What block would you like to remove from the queue?')
+
         def check(m):
             return True
+
         rem_block_msg = await self.bot.wait_for('message', check=check)
         block_queue_path = 'server_specific/welcome_blocks/_block_queue'
         with open(Path(block_queue_path), 'r') as block_queue_file:
             blocks = block_queue_file.read().splitlines()
-        
+
         open(Path(block_queue_path), 'w').close()
 
         with open(Path(block_queue_path), 'a') as block_queue_file:
@@ -214,4 +221,3 @@ class Welcome(commands.Cog):
             elif data_dict['type'] == 'embed':
                 block_embed = discord.Embed.from_dict(data_dict['embed_dict'])
                 await welcome_channel.send(embed=block_embed)
-
