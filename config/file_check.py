@@ -4,7 +4,9 @@ from pathlib import Path
 paths = [
     'private/priv_data.json',
     'server_specific/moderators.txt',
-    'server_specific/channel_ids.json'
+    'server_specific/channel_ids.json',
+    'server_specific/welcome_blocks/',
+    'server_specific/welcome_blocks/_block_queue'
 ]
 
 test_fails = {
