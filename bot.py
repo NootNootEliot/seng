@@ -7,6 +7,7 @@ from cogs.send_welcome import Welcome
 from cogs.validation import ModeratorChecking
 from cogs.error_handler import CommandErrorHandler
 from cogs.help import GetHelp
+from cogs.processes import Processes
 
 bot = commands.Bot(command_prefix='$')
 
@@ -31,4 +32,5 @@ bot.add_cog(Greetings(bot))
 bot.add_cog(Welcome(bot))
 bot.add_cog(ModeratorChecking(bot))
 bot.add_cog(GetHelp(bot))
+bot.add_cog(Processes(bot))
 bot.run(token)

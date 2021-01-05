@@ -51,6 +51,9 @@ class Welcome(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
         
+        author_id = ctx.author.id
+        self.bot.processes['m_make_wb'] = author_id
+
         await ctx.send('Please enter the name of the block:')
         def check(m):
             return True
