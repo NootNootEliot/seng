@@ -10,6 +10,11 @@ from cogs.help import GetHelp
 
 bot = commands.Bot(command_prefix='$')
 
+# Seng should keep track of which users are using which of Seng's processes,
+# as some processes may only be 'user-safe' with a single user. We track this
+# dictionary of 'task: user_id' in a bot constant called 'processes'.
+bot.processes = {}
+
 
 @bot.event
 async def on_ready():
