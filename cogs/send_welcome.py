@@ -7,10 +7,20 @@ import discord
 
 
 class Welcome(commands.Cog):
+    """Class for the Welcome Message command collection
+
+    Welcome Blocks are effectively files of json data that contain the
+    necesesary information to compose the Welcome Block and send it.
+
+    This class contains methods which allow moderators to write Welcome Blocks,
+    draft them into message queues, send them out into the #welcome channel,
+    and other support commands.
+    """
     def __init__(self, bot):
         self.bot = bot
 
     async def send_block(data_dict, channel):
+        """Send requested block in the requested channel"""
         if data_dict['type'] == 'text':
             await channel.send(data_dict['text'])
         elif data_dict['type'] == 'embed':
@@ -19,6 +29,7 @@ class Welcome(commands.Cog):
 
     @commands.command()
     async def m_list_wb(self, ctx):
+        """Lists all Welcome Blocks that Seng has in storage"""
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
@@ -26,13 +37,15 @@ class Welcome(commands.Cog):
         
         send_string = ''
         for welcome_block in os.listdir('server_specific/welcome_blocks'):
-            if welcome_block.startswith('_'):
+            if welcome_block.startswith('_'):  # Ignore _block_queue
                 continue
-            send_string += welcome_block.replace('.json', '') + '\n'
+            # Get just the name, and add a newline to separate the filenames
+            send_string += welcome_block.replace('.json', '\n')
         await ctx.send(send_string)
 
     @commands.command()
     async def m_make_wb(self, ctx):
+        """Process for a user creating a Welcome Block"""
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
@@ -83,6 +96,7 @@ class Welcome(commands.Cog):
 
     @commands.command()
     async def m_preview_wb(self, ctx):
+        """User requests a Welcome Blolck to view"""
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
@@ -92,6 +106,7 @@ class Welcome(commands.Cog):
         def check(m):
             return True
         name_msg = await self.bot.wait_for('message', check=check)
+        # Path must be the requested name, plus the .json file extension
         block_path = os.path.join(
                 'server_specific/welcome_blocks',
                 name_msg.content + '.json'
@@ -103,6 +118,7 @@ class Welcome(commands.Cog):
 
     @commands.command()
     async def m_view_wb_queue(self, ctx):
+        """Print the current Welcome Block queue"""
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
@@ -117,6 +133,7 @@ class Welcome(commands.Cog):
 
     @commands.command()
     async def m_add_wb_to_queue(self, ctx):
+        """Add requested Welcome Block to the queue"""
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
@@ -133,6 +150,7 @@ class Welcome(commands.Cog):
 
     @commands.command()
     async def m_see_draft_welcome_message(self, ctx):
+        """Print the current Welcome Block queue in 'export' form"""
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
@@ -153,6 +171,7 @@ class Welcome(commands.Cog):
 
     @commands.command()
     async def m_remove_wb_from_queue(self, ctx):
+        """Remove a requested Welcome Block from queue"""
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
@@ -177,6 +196,7 @@ class Welcome(commands.Cog):
 
     @commands.command()
     async def m_publish_welcome_message(self, ctx):
+        """Send the Welcome Block queue into the welcome channel"""
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
