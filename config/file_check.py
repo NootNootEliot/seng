@@ -4,7 +4,9 @@ from pathlib import Path
 paths = [
     'private/priv_data.json',
     'server_specific/moderators.txt',
-    'server_specific/channel_ids.json'
+    'server_specific/channel_ids.json',
+    'server_specific/welcome_blocks/',
+    'server_specific/welcome_blocks/_block_queue'
 ]
 
 test_fails = {
@@ -34,7 +36,7 @@ for test_type in test_fails:
         ' out of ' + str(test_length[test_type]) + ' tests.\n'
     )
     total_successes += successes
-    total_tests += test_length[test_type] 
+    total_tests += test_length[test_type]
 
 # Print results for all tests.
 print('Total Tests: ')
