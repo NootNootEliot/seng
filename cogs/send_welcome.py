@@ -360,7 +360,7 @@ class Welcome(commands.Cog):
             return
 
         author_id = ctx.author.id
-        if not await is_process_and_user_clear(self.bot, 
+        if not await is_process_and_user_clear(self.bot,
                                                'm_publish_welcome_message',
                                                author_id):
             return
@@ -379,7 +379,7 @@ class Welcome(commands.Cog):
                        'message? This will be posted publicly in the welcome '
                        'message channel. Please enter either \'yes\' or '
                        '\'no\'.')
-        
+
         while True:
             yes_no_msg = await self.bot.wait_for('message', check=check)
             if self.is_wanting_cancel(yes_no_msg, 'm_publish_welcome_message'):
@@ -400,7 +400,7 @@ class Welcome(commands.Cog):
         block_queue_path = 'server_specific/welcome_blocks/_block_queue'
         with open(Path(block_queue_path), 'r') as block_queue_file:
             blocks = block_queue_file.read().splitlines()
-        
+
         # Get the welcome channel
         with open('server_specific/channel_ids.json', 'r') as id_file:
             channel_id_dict = json.loads(id_file.read())
@@ -408,7 +408,7 @@ class Welcome(commands.Cog):
             welcome_id = channel_id_dict['WELCOME']
         guild = self.bot.get_guild(guild_id)
         welcome_channel = guild.get_channel(welcome_id)
-        
+
         # For every block in the queue, send it out
         for block in blocks:
             block_path = os.path.join(
