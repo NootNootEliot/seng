@@ -189,7 +189,7 @@ class Welcome(commands.Cog):
             return
 
         author_id = ctx.author.id
-        if not await is_process_and_user_clear(self.bot, 'm_preview_wb'
+        if not await is_process_and_user_clear(self.bot, 'm_preview_wb',
                                                author_id):
             return False
         self.bot.processes['m_preview_wb'] = author_id
@@ -214,10 +214,14 @@ class Welcome(commands.Cog):
                 'server_specific/welcome_blocks',
                 name_msg.content + '.json'
         )
-        with open(Path(block_path), 'r') as block_file:
-            data_dict = json.loads(block_file.read())
 
-        await self.send_block(data_dict, ctx)
+        try:
+            with open(Path(block_path), 'r') as block_file:
+                data_dict = json.loads(block_file.read())
+            await self.send_block(data_dict, ctx)
+        except FileNotFoundError:
+            await ctx.send('I could not find that block! Cancelling.')
+
         self.bot.processes['m_preview_wb'] = None
 
     @commands.command()
