@@ -178,7 +178,7 @@ class Welcome(commands.Cog):
 
         # Free user from process and free process from user
         self.bot.processes['m_make_wb'] = None
-    
+
     @commands.command()
     async def m_remove_wb(self, ctx):
         """Command for removing a welcome block from storage"""
@@ -201,7 +201,7 @@ class Welcome(commands.Cog):
                 m.author.id == author_id and
                 not m.content.startswith('$m')
             )
-        
+
         await ctx.send('Please enter the name of the welcome block you would '
                        'like to delete from **storage**. Alternatively, write '
                        '\'cancel\' to cancel.')
@@ -306,7 +306,7 @@ class Welcome(commands.Cog):
         await ctx.send('What block would you like to add to the queue? '
                        'Alternatively, write \'cancel\' to cancel.')
         add_block_msg = await self.bot.wait_for('message', check=check)
-        if self.is_wanting_cancel(add_block_msg, 'm_add_wb_to_queue'):
+        if await self.is_wanting_cancel(add_block_msg, 'm_add_wb_to_queue'):
             return
 
         # Make sure that block added actually exists
@@ -423,7 +423,8 @@ class Welcome(commands.Cog):
 
         while True:
             yes_no_msg = await self.bot.wait_for('message', check=check)
-            if self.is_wanting_cancel(yes_no_msg, 'm_publish_welcome_message'):
+            if await self.is_wanting_cancel(yes_no_msg,
+                                            'm_publish_welcome_message'):
                 return
             if yes_no_msg.content not in ['yes', 'no', 'cancel']:
                 await ctx.send('Please enter either \'yes\' or \'no\'.')
