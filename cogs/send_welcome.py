@@ -1,6 +1,7 @@
 from discord.ext import commands
 from pathlib import Path
-from .validation import is_moderator, is_mod_commands_channel
+from .validation import (is_moderator, is_mod_commands_channel,
+        asyncless_is_moderator, asyncless_is_mod_commands_channel)
 import json
 import os
 import discord
@@ -50,13 +51,39 @@ class Welcome(commands.Cog):
             return
         if not await is_mod_commands_channel(ctx):
             return
-        
+
+        # Check if someone is already in this process 
+        if 'm_make_wb' in self.bot.processes:
+            if self.bot.processes['m_make_wb'] != None:
+                ctx.send(
+                    '<@{}> - Another user is busy in this process - please '
+                    'wait for the process to become free '
+                    'again.'.format(authour_id)
+                )
+                return
+
         author_id = ctx.author.id
+        # Check if user is in another process
+        for user_id in self.bot.processes.values():
+            if user_id == authour_id:
+                ctx.send(
+                    '<@{}> - You are apparently already in another '
+                    'process.'.format(author_id)
+                )
+                return
+
+        # Add user to the process
         self.bot.processes['m_make_wb'] = author_id
 
-        await ctx.send('Please enter the name of the block:')
+        await ctx.send('Please enter to reference block:')
+
         def check(m):
-            return True
+            return (
+                asyncless_is_moderator(m) and
+                asyncless_is_mod_commands_channel(m) and
+                not m.content.startswith('$m')
+            )
+
         name_msg = await self.bot.wait_for('message', check=check)
 
         await ctx.send('What block is this? e.g. \'text\' or \'embed\'')
