@@ -29,6 +29,23 @@ async def is_mod_commands_channel(ctx):
     return True
 
 
+def asyncless_is_moderator(ctx):
+    """Version of is_moderator without async, for 'check' methods"""
+    with open('server_specific/moderators.txt', 'r') as moderator_file:
+        moderator_ids = moderator_file.read().splitlines()
+
+    return str(ctx.author.id) in moderator_ids
+
+
+def asyncless_is_mod_commands_channel(ctx):
+    """Version without async, for 'check' methods"""
+    with open('server_specific/channel_ids.json', 'r') as id_file:
+        mod_channel_id = json.loads(id_file.read())["MOD_COMMANDS"]
+
+    return ctx.channel.id == mod_channel_id
+
+
+
 class ModeratorChecking(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
