@@ -10,7 +10,6 @@ import discord
 
 
 class Welcome(commands.Cog):
-    # TODO: Try and get 'check' as one function shared between commands
     """Class for the Welcome Message command collection
 
     Welcome Blocks are effectively files of json data that contain the
@@ -269,7 +268,17 @@ class Welcome(commands.Cog):
         if self.is_wanting_cancel(add_block_msg, 'm_add_wb_to_queue'):
             return
 
-        # TODO: Make sure that any blocks added actually exist
+        # Make sure that block added actually exists
+        does_block_exist = False
+        for welcome_block in os.listdir('server_specific/welcome_blocks'):
+            if welcome_block.startswith('_'):  # Ignore _block_queue
+                continue
+            if add_block_msg.content == welcome_block.replace('.json', ''):
+                does_blolck_exist = True
+        if not does_block_exist:
+            await ctx.send('I could not find that block! Cancelling.')
+            self.bot.processes['m_add_wb_to_queue'] = None
+
         block_queue_path = 'server_specific/welcome_blocks/_block_queue'
         with open(Path(block_queue_path), 'a+') as block_queue_file:
             block_queue_file.write(add_block_msg.content + '\n')
