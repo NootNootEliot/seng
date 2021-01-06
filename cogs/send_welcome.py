@@ -9,6 +9,7 @@ import discord
 
 
 class Welcome(commands.Cog):
+    # TODO: Try and get 'check' as one function shared between commands
     """Class for the Welcome Message command collection
 
     Welcome Blocks are effectively files of json data that contain the
@@ -231,6 +232,7 @@ class Welcome(commands.Cog):
             return
         if not await is_mod_commands_channel(ctx):
             return
+
         block_queue_path = 'server_specific/welcome_blocks/_block_queue'
         with open(Path(block_queue_path), 'r') as block_queue_file:
             blocks = block_queue_file.readlines()
@@ -246,15 +248,36 @@ class Welcome(commands.Cog):
             return
         if not await is_mod_commands_channel(ctx):
             return
-        await ctx.send('What block would you like to add to the queue?')
+
+        author_id = ctx.author.id
+        if not await is_process_and_user_clear(self.bot, 'm_add_wb_to_queue', 
+                                               author_id):
+            return
+        # Add user to the process
+        self.bot.processes['m_add_wb_to_queue'] = author_id
+
+        await ctx.send('What block would you like to add to the queue? '
+                       'Alternatively, write \'cancel\' to cancel.')
+
         def check(m):
-            return True
+            return (
+                asyncless_is_moderator(m) and  # Possibly redundant
+                asyncless_is_mod_commands_channel(m) and
+                m.author.id == author_id and
+                not m.content.startswith('$m')
+            )
+
         add_block_msg = await self.bot.wait_for('message', check=check)
+        if self.is_wanting_cancel(add_block_msg, 'm_add_wb_to_queue'):
+            return
+        
+        # TODO: Make sure that any blocks added actually exist
         block_queue_path = 'server_specific/welcome_blocks/_block_queue'
         with open(Path(block_queue_path), 'a+') as block_queue_file:
             block_queue_file.write(add_block_msg.content + '\n')
 
         await ctx.send('Added block to the queue!')
+        self.bot.processes['m_add_wb_to_queue'] = None
 
     @commands.command()
     async def m_see_draft_welcome_message(self, ctx):
@@ -263,6 +286,7 @@ class Welcome(commands.Cog):
             return
         if not await is_mod_commands_channel(ctx):
             return
+
         block_queue_path = 'server_specific/welcome_blocks/_block_queue'
         with open(Path(block_queue_path), 'r') as block_queue_file:
             blocks = block_queue_file.read().splitlines()
@@ -285,10 +309,28 @@ class Welcome(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
 
+        author_id = ctx.author.id
+        if not await is_process_and_user_clear(self.bot,
+                                               'm_remove_wb_from_queue', 
+                                               author_id):
+            return
+        # Add user to the process
+        self.bot.processes['m_remove_wb_from_queue'] = author_id
+
         await ctx.send('What block would you like to remove from the queue?')
+
         def check(m):
-            return True
+            return (
+                asyncless_is_moderator(m) and  # Possibly redundant
+                asyncless_is_mod_commands_channel(m) and
+                m.author.id == author_id and
+                not m.content.startswith('$m')
+            )
+
         rem_block_msg = await self.bot.wait_for('message', check=check)
+        if is_wanting_cancecl(rem_block_msg, 'm_remove_wb_from_queue'):
+            return
+
         block_queue_path = 'server_specific/welcome_blocks/_block_queue'
         with open(Path(block_queue_path), 'r') as block_queue_file:
             blocks = block_queue_file.read().splitlines()
@@ -301,10 +343,12 @@ class Welcome(commands.Cog):
                     continue
                 block_queue_file.write(block + '\n')
         await ctx.send('Block removed.')
+        self.bot.processes['m_remove_wb_from_queue'] = None
 
     @commands.command()
     async def m_publish_welcome_message(self, ctx):
         """Send the Welcome Block queue into the welcome channel"""
+        # TODO: Add a confirmation check
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
