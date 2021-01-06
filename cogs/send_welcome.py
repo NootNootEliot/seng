@@ -69,7 +69,8 @@ class Welcome(commands.Cog):
 
         await ctx.send('You may write \'cancel\' at any time during this '
                        'proceses to cancel it.\nPlease enter a name to '
-                       'reference the block:')
+                       'reference the block: (Note that entering the name of '
+                       'an existing block will overwrite it.)')
         
         # Check used for correspondance with the user
         def check(m):
@@ -101,7 +102,7 @@ class Welcome(commands.Cog):
         # Request further information depending on the type of block
         if type_msg.content == 'text':
             await ctx.send('Please enter and send the text that you would '
-                           'like to compose for  this block.')
+                           'like to compose for this block.')
             text_msg = await self.bot.wait_for('message', check=check)
             if await self.is_wanting_cancel(text_msg, 'm_make_wb'):
                 return
