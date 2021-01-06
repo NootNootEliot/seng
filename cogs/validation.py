@@ -58,7 +58,7 @@ async def is_process_and_user_clear(bot, command, author_id):
 
     # Check if someone is already in this process
     if 'm_make_wb' in bot.processes:
-        if self.bot.processes['m_make_wb'] is not None:
+        if bot.processes['m_make_wb'] is not None:
             ctx.send(
                 '<@{}> - Another user is busy in this process - please '
                 'wait for the process to become free '
