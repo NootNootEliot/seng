@@ -354,24 +354,62 @@ class Welcome(commands.Cog):
     @commands.command()
     async def m_publish_welcome_message(self, ctx):
         """Send the Welcome Block queue into the welcome channel"""
-        # TODO: Add a confirmation check
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
             return
 
+        author_id = ctx.author.id
+        if not await is_process_and_user_clear(self.bot, 
+                                               'm_publish_welcome_message',
+                                               author_id):
+            return
+        # Add user to the process
+        self.bot.processes['m_publish_welcome_message'] = author_id
+
+        def check(m):
+            return (
+                asyncless_is_moderator(m) and  # Possibly redundant
+                asyncless_is_mod_commands_channel(m) and
+                m.author.id == author_id and
+                not m.content.startswith('$m')
+            )
+        # Confirmation check
+        await ctx.send('Are you sure that you want to publish the welcome '
+                       'message? This will be posted publicly in the welcome '
+                       'message channel. Please enter either \'yes\' or '
+                       '\'no\'.')
+        
+        while True:
+            yes_no_msg = await self.bot.wait_for('message', check=check)
+            if self.is_wanting_cancel(yes_no_msg, 'm_publish_welcome_message'):
+                return
+            if yes_no_msg.content not in ['yes', 'no', 'cancel']:
+                await ctx.send('Please enter either \'yes\' or \'no\'.')
+                continue
+            break
+
+        if yes_no_msg.content == 'no':
+            await ctx.send('Cancelling.')
+            self.bot.processes['m_publish_welcome_message'] = None
+            return
+
+        # Otherwise, yes_no_msg.content is 'yes'
+
+        # Get a list of all the blocks in the queue
         block_queue_path = 'server_specific/welcome_blocks/_block_queue'
         with open(Path(block_queue_path), 'r') as block_queue_file:
             blocks = block_queue_file.read().splitlines()
-
+        
+        # Get the welcome channel
         with open('server_specific/channel_ids.json', 'r') as id_file:
             channel_id_dict = json.loads(id_file.read())
             guild_id = channel_id_dict['GUILD']
             welcome_id = channel_id_dict['WELCOME']
-
         guild = self.bot.get_guild(guild_id)
         welcome_channel = guild.get_channel(welcome_id)
-
+        
+        # For every block in the queue, send it out
         for block in blocks:
             block_path = os.path.join(
                 'server_specific/welcome_blocks',
