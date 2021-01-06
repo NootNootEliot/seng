@@ -69,12 +69,6 @@ class Welcome(commands.Cog):
         # Add user to the process
         self.bot.processes['m_make_wb'] = author_id
 
-        await ctx.send('You may write \'cancel\' at any time during this '
-                       'proceses to cancel it.\nPlease enter a name to '
-                       'reference the block: (Note that entering the name of '
-                       'an existing block will overwrite it.)')
-
-        # Check used for correspondance with the user
         def check(m):
             return (
                 asyncless_is_moderator(m) and  # Possibly redundant
@@ -83,6 +77,10 @@ class Welcome(commands.Cog):
                 not m.content.startswith('$m')
             )
 
+        await ctx.send('You may write \'cancel\' at any time during this '
+                       'proceses to cancel it.\nPlease enter a name to '
+                       'reference the block: (Note that entering the name of '
+                       'an existing block will overwrite it.)')
         name_msg = await self.bot.wait_for('message', check=check)
         if await self.is_wanting_cancel(name_msg, 'm_make_wb'):
             return
@@ -196,9 +194,6 @@ class Welcome(commands.Cog):
             return False
         self.bot.processes['m_preview_wb'] = author_id
 
-        await ctx.send('What block would you like to search for to preview? '
-                       'Alternatively, write \'cancel\' to cancel.')
-
         # The check used for correspondance with the user
         def check(m):
             return (
@@ -208,9 +203,12 @@ class Welcome(commands.Cog):
                 not m.content.startswith('$m')
             )
 
+        await ctx.send('What block would you like to search for to preview? '
+                       'Alternatively, write \'cancel\' to cancel.')
         name_msg = await self.bot.wait_for('message', check=check)
         if await self.is_wanting_cancel(name_msg, 'm_preview_wb'):
             return
+
         # Path must be the requested name, plus the .json file extension
         block_path = os.path.join(
                 'server_specific/welcome_blocks',
@@ -257,9 +255,6 @@ class Welcome(commands.Cog):
         # Add user to the process
         self.bot.processes['m_add_wb_to_queue'] = author_id
 
-        await ctx.send('What block would you like to add to the queue? '
-                       'Alternatively, write \'cancel\' to cancel.')
-
         def check(m):
             return (
                 asyncless_is_moderator(m) and  # Possibly redundant
@@ -268,6 +263,8 @@ class Welcome(commands.Cog):
                 not m.content.startswith('$m')
             )
 
+        await ctx.send('What block would you like to add to the queue? '
+                       'Alternatively, write \'cancel\' to cancel.')
         add_block_msg = await self.bot.wait_for('message', check=check)
         if self.is_wanting_cancel(add_block_msg, 'm_add_wb_to_queue'):
             return
@@ -279,6 +276,49 @@ class Welcome(commands.Cog):
 
         await ctx.send('Added block to the queue!')
         self.bot.processes['m_add_wb_to_queue'] = None
+
+    @commands.command()
+    async def m_remove_wb_from_queue(self, ctx):
+        """Remove a requested Welcome Block from queue"""
+        if not await is_moderator(ctx):
+            return
+        if not await is_mod_commands_channel(ctx):
+            return
+
+        author_id = ctx.author.id
+        if not await is_process_and_user_clear(self.bot,
+                                               'm_remove_wb_from_queue',
+                                               author_id):
+            return
+        # Add user to the process
+        self.bot.processes['m_remove_wb_from_queue'] = author_id
+
+        def check(m):
+            return (
+                asyncless_is_moderator(m) and  # Possibly redundant
+                asyncless_is_mod_commands_channel(m) and
+                m.author.id == author_id and
+                not m.content.startswith('$m')
+            )
+
+        await ctx.send('What block would you like to remove from the queue?')
+        rem_block_msg = await self.bot.wait_for('message', check=check)
+        if is_wanting_cancecl(rem_block_msg, 'm_remove_wb_from_queue'):
+            return
+
+        block_queue_path = 'server_specific/welcome_blocks/_block_queue'
+        with open(Path(block_queue_path), 'r') as block_queue_file:
+            blocks = block_queue_file.read().splitlines()
+
+        open(Path(block_queue_path), 'w').close()  # Erase entire file
+
+        with open(Path(block_queue_path), 'a') as block_queue_file:
+            for block in blocks:
+                if block == rem_block_msg.content:
+                    continue
+                block_queue_file.write(block + '\n')
+        await ctx.send('Block removed.')
+        self.bot.processes['m_remove_wb_from_queue'] = None
 
     @commands.command()
     async def m_see_draft_welcome_message(self, ctx):
@@ -301,50 +341,6 @@ class Welcome(commands.Cog):
                 data_dict = json.loads(block_file.read())
 
             await self.send_block(data_dict, ctx)
-
-    @commands.command()
-    async def m_remove_wb_from_queue(self, ctx):
-        """Remove a requested Welcome Block from queue"""
-        if not await is_moderator(ctx):
-            return
-        if not await is_mod_commands_channel(ctx):
-            return
-
-        author_id = ctx.author.id
-        if not await is_process_and_user_clear(self.bot,
-                                               'm_remove_wb_from_queue',
-                                               author_id):
-            return
-        # Add user to the process
-        self.bot.processes['m_remove_wb_from_queue'] = author_id
-
-        await ctx.send('What block would you like to remove from the queue?')
-
-        def check(m):
-            return (
-                asyncless_is_moderator(m) and  # Possibly redundant
-                asyncless_is_mod_commands_channel(m) and
-                m.author.id == author_id and
-                not m.content.startswith('$m')
-            )
-
-        rem_block_msg = await self.bot.wait_for('message', check=check)
-        if is_wanting_cancecl(rem_block_msg, 'm_remove_wb_from_queue'):
-            return
-
-        block_queue_path = 'server_specific/welcome_blocks/_block_queue'
-        with open(Path(block_queue_path), 'r') as block_queue_file:
-            blocks = block_queue_file.read().splitlines()
-
-        open(Path(block_queue_path), 'w').close()  # Erase entire file
-
-        with open(Path(block_queue_path), 'a') as block_queue_file:
-            for block in blocks:
-                if block == rem_block_msg.content:
-                    continue
-                block_queue_file.write(block + '\n')
-        await ctx.send('Block removed.')
-        self.bot.processes['m_remove_wb_from_queue'] = None
 
     @commands.command()
     async def m_publish_welcome_message(self, ctx):
