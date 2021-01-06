@@ -305,6 +305,7 @@ class Welcome(commands.Cog):
 
         await ctx.send('What block would you like to add to the queue? '
                        'Alternatively, write \'cancel\' to cancel.')
+
         add_block_msg = await self.bot.wait_for('message', check=check)
         if await self.is_wanting_cancel(add_block_msg, 'm_add_wb_to_queue'):
             return
@@ -420,7 +421,6 @@ class Welcome(commands.Cog):
                        'message? This will be posted publicly in the welcome '
                        'message channel. Please enter either \'yes\' or '
                        '\'no\'.')
-
         while True:
             yes_no_msg = await self.bot.wait_for('message', check=check)
             if await self.is_wanting_cancel(yes_no_msg,
@@ -459,7 +459,6 @@ class Welcome(commands.Cog):
             )
             with open(Path(block_path), 'r') as block_file:
                 data_dict = json.loads(block_file.read())
-
             await self.send_block(data_dict, welcome_channel)
 
         self.bot.processes['m_publish_welcome_message'] = None

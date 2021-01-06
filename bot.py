@@ -8,19 +8,23 @@ from cogs.validation import ModeratorChecking
 from cogs.error_handler import CommandErrorHandler
 from cogs.help import GetHelp
 from cogs.processes import Processes
+from cogs.member_stats import MemberStats
+from cogs.channel_stats import ChannelStats
+from cogs.seng_info import PrivacyPolicy
 
-bot = commands.Bot(command_prefix='$')
+intents = discord.Intents.default()
+intents.members = True
 
 # Seng should keep track of which users are using which of Seng's processes,
 # as some processes may only be 'user-safe' with a single user. We track this
 # dictionary of 'task: user_id' in a bot constant called 'processes'.
 bot.processes = {}
 
+bot = commands.Bot(command_prefix='$')
 
 @bot.event
 async def on_ready():
     print("Ready to go!")
-
 
 # Read in the token.
 with open(Path('./private/priv_data.json'), 'r') as data_file:
@@ -28,9 +32,12 @@ with open(Path('./private/priv_data.json'), 'r') as data_file:
 
 bot.remove_command('help')  # Overwrite normal 'help' command
 #bot.add_cog(CommandErrorHandler(bot))
+bot.add_cog(MemberStats(bot))
+bot.add_cog(ChannelStats(bot))
 bot.add_cog(Greetings(bot))
 bot.add_cog(Welcome(bot))
 bot.add_cog(ModeratorChecking(bot))
 bot.add_cog(GetHelp(bot))
 bot.add_cog(Processes(bot))
+bot.add_cog(PrivacyPolicy(bot))
 bot.run(token)

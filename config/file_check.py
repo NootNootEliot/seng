@@ -36,7 +36,7 @@ for test_type in test_fails:
         ' out of ' + str(test_length[test_type]) + ' tests.\n'
     )
     total_successes += successes
-    total_tests += test_length[test_type] 
+    total_tests += test_length[test_type]
 
 # Print results for all tests.
 print('Total Tests: ')
