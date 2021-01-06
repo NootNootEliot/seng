@@ -178,6 +178,47 @@ class Welcome(commands.Cog):
 
         # Free user from process and free process from user
         self.bot.processes['m_make_wb'] = None
+    
+    @commands.command()
+    async def m_remove_wb(self, ctx):
+        """Command for removing a welcome block from storage"""
+        if not await is_moderator(ctx):
+            return
+        if not await is_mod_commands_channel(ctx):
+            return
+
+        author_id = ctx.author.id
+        if not await is_process_and_user_clear(self.bot, 'm_remove_wb',
+                                               author_id):
+            return
+        # Add user to the process
+        self.bot.processes['m_remove_wb'] = author_id
+
+        def check(m):
+            return (
+                asyncless_is_moderator(m) and  # Possibly redundant
+                asyncless_is_mod_commands_channel(m) and
+                m.author.id == author_id and
+                not m.content.startswith('$m')
+            )
+        
+        await ctx.send('Please enter the name of the welcome block you would '
+                       'like to delete from **storage**. Alternatively, write '
+                       '\'cancel\' to cancel.')
+        del_block_msg = await self.bot.wait_for('message', check=check)
+        if await self.is_wanting_cancel(del_block_msg, 'm_remove_wb'):
+            return
+
+        try:
+            os.remove(os.path.join('server_specific/welcome_blocks',
+                                   del_block_msg.content + '.json'))
+        except FileNotFoundError:
+            await ctx.send('I could not find that block! Cancelling.')
+            self.bot.processes['m_remvoe_wb'] = None
+            return
+
+        await ctx.send('Deleted that welcome block.')
+        self.bot.processes['m_remove_wb'] = None
 
     @commands.command()
     async def m_preview_wb(self, ctx):
@@ -274,7 +315,7 @@ class Welcome(commands.Cog):
             if welcome_block.startswith('_'):  # Ignore _block_queue
                 continue
             if add_block_msg.content == welcome_block.replace('.json', ''):
-                does_blolck_exist = True
+                does_block_exist = True
         if not does_block_exist:
             await ctx.send('I could not find that block! Cancelling.')
             self.bot.processes['m_add_wb_to_queue'] = None
