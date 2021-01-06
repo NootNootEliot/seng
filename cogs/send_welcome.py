@@ -419,3 +419,5 @@ class Welcome(commands.Cog):
                 data_dict = json.loads(block_file.read())
 
             await self.send_block(data_dict, welcome_channel)
+
+        self.bot.processes['m_publish_welcome_message'] = None
