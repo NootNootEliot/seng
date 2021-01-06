@@ -20,7 +20,7 @@ class Welcome(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def send_block(data_dict, channel):
+    async def send_block(self, data_dict, channel):
         """Send requested block in the requested channel"""
         if data_dict['type'] == 'text':
             await channel.send(data_dict['text'])
@@ -52,30 +52,30 @@ class Welcome(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
 
+        author_id = ctx.author.id
+        # Check if user is in another process
+        for user_id in self.bot.processes.values():
+            if user_id == author_id:
+                await ctx.send(
+                    '<@{}> - You are apparently already in another '
+                    'process.'.format(author_id)
+                )
+                return
+
         # Check if someone is already in this process 
         if 'm_make_wb' in self.bot.processes:
             if self.bot.processes['m_make_wb'] != None:
                 ctx.send(
                     '<@{}> - Another user is busy in this process - please '
                     'wait for the process to become free '
-                    'again.'.format(authour_id)
-                )
-                return
-
-        author_id = ctx.author.id
-        # Check if user is in another process
-        for user_id in self.bot.processes.values():
-            if user_id == authour_id:
-                ctx.send(
-                    '<@{}> - You are apparently already in another '
-                    'process.'.format(author_id)
+                    'again.'.format(author_id)
                 )
                 return
 
         # Add user to the process
         self.bot.processes['m_make_wb'] = author_id
 
-        await ctx.send('Please enter to reference block:')
+        await ctx.send('Please enter a name to reference the block:')
 
         def check(m):
             return (
@@ -85,20 +85,55 @@ class Welcome(commands.Cog):
             )
 
         name_msg = await self.bot.wait_for('message', check=check)
-
-        await ctx.send('What block is this? e.g. \'text\' or \'embed\'')
-        type_msg = await self.bot.wait_for('message', check=check)
+        while True:
+            await ctx.send('Is this block a text type (normal text characters, '
+                           'including media links), or an embed type (the '
+                           'Discord \'boxes\'? Please enter either \'embed\' '
+                           'or \'text\'.')
+            type_msg = await self.bot.wait_for('message', check=check)
+            
+            # Make sure that the type_msg is valid
+            if type_msg.content not in ['text', 'embed']:
+                await ctx.send('Please enter either \'text\' or \'embed\'.')
+            else:
+                break
 
         if type_msg.content == 'text':
-            await ctx.send('Please enter the text that you would like!')
+            await ctx.send('Please enter and send the text that you would '
+                           'like to compose for  this block.')
             text_msg = await self.bot.wait_for('message', check=check)
         elif type_msg.content == 'embed':
-            await ctx.send('Please enter the title of the embed.')
+            await ctx.send('Please enter the embed\'s title.')
             embed_title_msg = await self.bot.wait_for('message', check=check)
             await ctx.send('Please enter the embed\'s description.')
             embed_descrip_msg = await self.bot.wait_for('message', check=check)
-            await ctx.send('Please enter the colour for the embed.')
-            colour_msg = await self.bot.wait_for('message', check=check)
+
+            while True:
+                is_val_error = False
+                await ctx.send('Please enter the embed\'s colour in the form '
+                               'R G B. For instance, \'52 235 152\'')
+                colour_msg = await self.bot.wait_for('message', check=check)
+                # Get individual RGB values
+                rgb = colour_msg.content.split(' ')
+
+                # Ensure that numbers are entered
+                try:
+                    colour = discord.Color.from_rgb(int(rgb[0]), int(rgb[1]),
+                                                    int(rgb[2]))
+                except ValueError:
+                    await ctx.send('Error - incorrect format.')
+                    continue
+
+                # Ensure that entered numbers are in the correct range
+                for val in rgb:
+                    if (int(val) > 255) or (int(val) < 0):
+                        await ctx.send('Error - RGB values musut be between 0 '
+                                       'and 255 inclusive.')
+                        is_val_error = True
+                        break
+                if is_val_error:
+                    continue
+                break
         
         data_dict = {}
         data_dict['title'] = name_msg.content
@@ -109,20 +144,23 @@ class Welcome(commands.Cog):
             embed_dict = {}
             embed_dict['title'] = embed_title_msg.content
             embed_dict['description'] = embed_descrip_msg.content
-            rgb_vals = colour_msg.content.split(' ')
-            rgb = [int(val) for val in rgb_vals]
-            colour = discord.Color.from_rgb(rgb[0], rgb[1], rgb[2])
+
+            # Edit the colour for storage use
             embed_dict['color'] = int(str(colour).lstrip('#'), 16)
+            
+            # 'rich ' is the default
             embed_dict['type'] = 'rich'
             data_dict['embed_dict'] = embed_dict
-        block_path = os.path.join(
-                'server_specific/welcome_blocks',
-                name_msg.content + '.json'
-        )
+
+        block_path = os.path.join('server_specific/welcome_blocks',
+                                  name_msg.content + '.json')
         with open(Path(block_path), 'w+') as block_file:
             block_file.write(json.dumps(data_dict))
 
-        await ctx.send('Block formation process completed.')
+        await ctx.send('Block formation process completed. Thank you!')
+
+        # Free user from process and free process from user
+        self.bot.processes['m_make_wb'] = None
 
     @commands.command()
     async def m_preview_wb(self, ctx):
@@ -144,7 +182,7 @@ class Welcome(commands.Cog):
         with open(Path(block_path), 'r') as block_file:
             data_dict = json.loads(block_file.read())
 
-        await send_block(data_dict, ctx)
+        await self.send_block(data_dict, ctx)
 
     @commands.command()
     async def m_view_wb_queue(self, ctx):
@@ -197,7 +235,7 @@ class Welcome(commands.Cog):
             with open(Path(block_path), 'r') as block_file:
                 data_dict = json.loads(block_file.read())
 
-            await send_block(data_dict, ctx)
+            await self.send_block(data_dict, ctx)
 
     @commands.command()
     async def m_remove_wb_from_queue(self, ctx):
@@ -252,4 +290,4 @@ class Welcome(commands.Cog):
             with open(Path(block_path), 'r') as block_file:
                 data_dict = json.loads(block_file.read())
 
-            await send_block(data_dict, welcome_channel)
+            await self.send_block(data_dict, welcome_channel)
