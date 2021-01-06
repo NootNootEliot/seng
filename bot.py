@@ -7,12 +7,18 @@ from cogs.send_welcome import Welcome
 from cogs.validation import ModeratorChecking
 from cogs.error_handler import CommandErrorHandler
 from cogs.help import GetHelp
+from cogs.processes import Processes
 from cogs.member_stats import MemberStats
 from cogs.channel_stats import ChannelStats
 from cogs.seng_info import PrivacyPolicy
 
 intents = discord.Intents.default()
 intents.members = True
+
+# Seng should keep track of which users are using which of Seng's processes,
+# as some processes may only be 'user-safe' with a single user. We track this
+# dictionary of 'task: user_id' in a bot constant called 'processes'.
+bot.processes = {}
 
 bot = commands.Bot(command_prefix='$')
 
@@ -32,5 +38,6 @@ bot.add_cog(Greetings(bot))
 bot.add_cog(Welcome(bot))
 bot.add_cog(ModeratorChecking(bot))
 bot.add_cog(GetHelp(bot))
+bot.add_cog(Processes(bot))
 bot.add_cog(PrivacyPolicy(bot))
 bot.run(token)
