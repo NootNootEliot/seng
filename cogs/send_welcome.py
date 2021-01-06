@@ -75,8 +75,11 @@ class Welcome(commands.Cog):
         # Add user to the process
         self.bot.processes['m_make_wb'] = author_id
 
-        await ctx.send('Please enter a name to reference the block:')
-
+        await ctx.send('You may write \'cancel\' at any time during this '
+                       'proceses to cancel it.\n Please enter a name to '
+                       'reference the block:')
+        
+        # Check used for correspondance with the user
         def check(m):
             return (
                 asyncless_is_moderator(m) and
@@ -91,32 +94,58 @@ class Welcome(commands.Cog):
                            'Discord \'boxes\'? Please enter either \'embed\' '
                            'or \'text\'.')
             type_msg = await self.bot.wait_for('message', check=check)
+
+            if type_msg.content == 'cancel':
+                await ctx.send('Cancelling the procecss.')
+                self.bot.processes['m_make_wb'] = None
+                return
             
             # Make sure that the type_msg is valid
             if type_msg.content not in ['text', 'embed']:
                 await ctx.send('Please enter either \'text\' or \'embed\'.')
             else:
                 break
-
+        
+        # Request further information depending on the type of block
         if type_msg.content == 'text':
             await ctx.send('Please enter and send the text that you would '
                            'like to compose for  this block.')
             text_msg = await self.bot.wait_for('message', check=check)
+            if text_msg.content == 'cancel':
+                await ctx.send('Cancelling the procecss.')
+                self.bot.processes['m_make_wb'] = None
+                return
         elif type_msg.content == 'embed':
+            # Embed Title
             await ctx.send('Please enter the embed\'s title.')
             embed_title_msg = await self.bot.wait_for('message', check=check)
+            if embed_title_msg.content == 'cancel':
+                await ctx.send('Cancelling the process.')
+                self.bot.processes['m_make_wb'] = None
+                return
+            
+            # Embed Description
             await ctx.send('Please enter the embed\'s description.')
             embed_descrip_msg = await self.bot.wait_for('message', check=check)
+            if embed_descrip_msg.content == 'cancel':
+                await ctx.send('Cancelling the process.')
+                self.bot.processes['m_make_wb'] = None
+                return
 
-            while True:
+            # Embed Colour
+            while True:  # Loop until format is correct
                 is_val_error = False
                 await ctx.send('Please enter the embed\'s colour in the form '
                                'R G B. For instance, \'52 235 152\'')
                 colour_msg = await self.bot.wait_for('message', check=check)
+                if colour_msg.content == 'cancel':
+                    await ctx.send('Cancelling the process.')
+                    self.bot.processes['m_make_wb'] = None
+                    return
                 # Get individual RGB values
                 rgb = colour_msg.content.split(' ')
 
-                # Ensure that numbers are entered
+                # Ensure that numbers are entered, rather than e.g. characters
                 try:
                     colour = discord.Color.from_rgb(int(rgb[0]), int(rgb[1]),
                                                     int(rgb[2]))
@@ -135,12 +164,14 @@ class Welcome(commands.Cog):
                     continue
                 break
         
+        # Construct dictionary for block storage
         data_dict = {}
         data_dict['title'] = name_msg.content
         data_dict['type'] = type_msg.content
         if type_msg.content == 'text':
             data_dict['text'] = text_msg.content
         elif type_msg.content == 'embed':
+            # Embeds have their own dictionary for embed information
             embed_dict = {}
             embed_dict['title'] = embed_title_msg.content
             embed_dict['description'] = embed_descrip_msg.content
