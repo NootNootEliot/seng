@@ -45,6 +45,30 @@ def asyncless_is_mod_commands_channel(ctx):
     return ctx.channel.id == mod_channel_id
 
 
+async def is_process_and_user_clear(bot, command, author_id):
+    """Checks if a process is clear of a user, and vice versa"""
+    # Check if user is in another process
+    for user_id in bot.processes.values():
+        if user_id == author_id:
+            await ctx.send(
+                '<@{}> - You are apparently already in another '
+                'process.'.format(author_id)
+            )
+            return False
+
+    # Check if someone is already in this process 
+    if 'm_make_wb' in bot.processes:
+        if self.bot.processes['m_make_wb'] != None:
+            ctx.send(
+                '<@{}> - Another user is busy in this process - please '
+                'wait for the process to become free '
+                'again.'.format(author_id)
+            )
+            return False
+
+    # Otherwise, process must be clear
+    return True
+
 
 class ModeratorChecking(commands.Cog):
     def __init__(self, bot):

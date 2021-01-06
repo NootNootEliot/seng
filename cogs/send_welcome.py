@@ -1,7 +1,8 @@
 from discord.ext import commands
 from pathlib import Path
 from .validation import (is_moderator, is_mod_commands_channel,
-        asyncless_is_moderator, asyncless_is_mod_commands_channel)
+        asyncless_is_moderator, asyncless_is_mod_commands_channel,
+        is_process_and_user_clear)
 import json
 import os
 import discord
@@ -27,6 +28,13 @@ class Welcome(commands.Cog):
         elif data_dict['type'] == 'embed':
             block_embed = discord.Embed.from_dict(data_dict['embed_dict'])
             await channel.send(embed=block_embed)
+    
+    async def is_wanting_cancel(self, message, command):
+        if message.content == 'cancel':
+            await message.channel.send('Cancelling the procecss.')
+            self.bot.processes[command] = None
+            return True
+        return False
 
     @commands.command()
     async def m_list_wb(self, ctx):
@@ -53,51 +61,35 @@ class Welcome(commands.Cog):
             return
 
         author_id = ctx.author.id
-        # Check if user is in another process
-        for user_id in self.bot.processes.values():
-            if user_id == author_id:
-                await ctx.send(
-                    '<@{}> - You are apparently already in another '
-                    'process.'.format(author_id)
-                )
-                return
-
-        # Check if someone is already in this process 
-        if 'm_make_wb' in self.bot.processes:
-            if self.bot.processes['m_make_wb'] != None:
-                ctx.send(
-                    '<@{}> - Another user is busy in this process - please '
-                    'wait for the process to become free '
-                    'again.'.format(author_id)
-                )
-                return
-
+        if not await is_process_and_user_clear(self.bot, 'm_make_wb', 
+                                               author_id):
+            return
         # Add user to the process
         self.bot.processes['m_make_wb'] = author_id
 
         await ctx.send('You may write \'cancel\' at any time during this '
-                       'proceses to cancel it.\n Please enter a name to '
+                       'proceses to cancel it.\nPlease enter a name to '
                        'reference the block:')
         
         # Check used for correspondance with the user
         def check(m):
             return (
-                asyncless_is_moderator(m) and
+                asyncless_is_moderator(m) and  # Possibly redundant
                 asyncless_is_mod_commands_channel(m) and
+                m.author.id == author_id and
                 not m.content.startswith('$m')
             )
 
         name_msg = await self.bot.wait_for('message', check=check)
+        if self.is_wanting_cancel(name_msg, 'm_make_wb'):
+            return
         while True:
             await ctx.send('Is this block a text type (normal text characters, '
                            'including media links), or an embed type (the '
                            'Discord \'boxes\'? Please enter either \'embed\' '
                            'or \'text\'.')
             type_msg = await self.bot.wait_for('message', check=check)
-
-            if type_msg.content == 'cancel':
-                await ctx.send('Cancelling the procecss.')
-                self.bot.processes['m_make_wb'] = None
+            if self.is_wanting_cancel(type_msg, 'm_make_wb'):
                 return
             
             # Make sure that the type_msg is valid
@@ -111,37 +103,31 @@ class Welcome(commands.Cog):
             await ctx.send('Please enter and send the text that you would '
                            'like to compose for  this block.')
             text_msg = await self.bot.wait_for('message', check=check)
-            if text_msg.content == 'cancel':
-                await ctx.send('Cancelling the procecss.')
-                self.bot.processes['m_make_wb'] = None
+            if self.is_wanting_cancel(text_msg, 'm_make_wb'):
                 return
         elif type_msg.content == 'embed':
             # Embed Title
             await ctx.send('Please enter the embed\'s title.')
             embed_title_msg = await self.bot.wait_for('message', check=check)
-            if embed_title_msg.content == 'cancel':
-                await ctx.send('Cancelling the process.')
-                self.bot.processes['m_make_wb'] = None
+            if self.is_wanting_cancel(embed_title_msg, 'm_make_wb'):
                 return
-            
+
             # Embed Description
             await ctx.send('Please enter the embed\'s description.')
             embed_descrip_msg = await self.bot.wait_for('message', check=check)
-            if embed_descrip_msg.content == 'cancel':
-                await ctx.send('Cancelling the process.')
-                self.bot.processes['m_make_wb'] = None
+            if self.is_wanting_cancel(embed_descrip_msg, 'm_make_wb'):
                 return
 
             # Embed Colour
             while True:  # Loop until format is correct
+                # Request RGB colour values
                 is_val_error = False
                 await ctx.send('Please enter the embed\'s colour in the form '
                                'R G B. For instance, \'52 235 152\'')
                 colour_msg = await self.bot.wait_for('message', check=check)
-                if colour_msg.content == 'cancel':
-                    await ctx.send('Cancelling the process.')
-                    self.bot.processes['m_make_wb'] = None
+                if self.is_wanting_cancel(colour_msg, 'm_make_wb'):
                     return
+
                 # Get individual RGB values
                 rgb = colour_msg.content.split(' ')
 
@@ -201,9 +187,18 @@ class Welcome(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
 
-        await ctx.send('What block would you like to search for?')
+        await ctx.send('What block would you like to search for to preview? '
+                       'Alternatively, write \'cancel\' to cancel.')
+
+        # Check used for correspondance with the user
         def check(m):
-            return True
+            return (
+                asyncless_is_moderator(m) and  # Possibly redundant
+                asyncless_is_mod_commands_channel(m) and
+                m.author.id == author_id and
+                not m.content.startswith('$m')
+            )
+
         name_msg = await self.bot.wait_for('message', check=check)
         # Path must be the requested name, plus the .json file extension
         block_path = os.path.join(
