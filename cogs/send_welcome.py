@@ -81,7 +81,7 @@ class Welcome(commands.Cog):
             )
 
         name_msg = await self.bot.wait_for('message', check=check)
-        if self.is_wanting_cancel(name_msg, 'm_make_wb'):
+        if await self.is_wanting_cancel(name_msg, 'm_make_wb'):
             return
         while True:
             await ctx.send('Is this block a text type (normal text characters, '
@@ -89,7 +89,7 @@ class Welcome(commands.Cog):
                            'Discord \'boxes\'? Please enter either \'embed\' '
                            'or \'text\'.')
             type_msg = await self.bot.wait_for('message', check=check)
-            if self.is_wanting_cancel(type_msg, 'm_make_wb'):
+            if await self.is_wanting_cancel(type_msg, 'm_make_wb'):
                 return
             
             # Make sure that the type_msg is valid
@@ -103,19 +103,19 @@ class Welcome(commands.Cog):
             await ctx.send('Please enter and send the text that you would '
                            'like to compose for  this block.')
             text_msg = await self.bot.wait_for('message', check=check)
-            if self.is_wanting_cancel(text_msg, 'm_make_wb'):
+            if await self.is_wanting_cancel(text_msg, 'm_make_wb'):
                 return
         elif type_msg.content == 'embed':
             # Embed Title
             await ctx.send('Please enter the embed\'s title.')
             embed_title_msg = await self.bot.wait_for('message', check=check)
-            if self.is_wanting_cancel(embed_title_msg, 'm_make_wb'):
+            if await self.is_wanting_cancel(embed_title_msg, 'm_make_wb'):
                 return
 
             # Embed Description
             await ctx.send('Please enter the embed\'s description.')
             embed_descrip_msg = await self.bot.wait_for('message', check=check)
-            if self.is_wanting_cancel(embed_descrip_msg, 'm_make_wb'):
+            if await self.is_wanting_cancel(embed_descrip_msg, 'm_make_wb'):
                 return
 
             # Embed Colour
@@ -125,7 +125,7 @@ class Welcome(commands.Cog):
                 await ctx.send('Please enter the embed\'s colour in the form '
                                'R G B. For instance, \'52 235 152\'')
                 colour_msg = await self.bot.wait_for('message', check=check)
-                if self.is_wanting_cancel(colour_msg, 'm_make_wb'):
+                if await self.is_wanting_cancel(colour_msg, 'm_make_wb'):
                     return
 
                 # Get individual RGB values
@@ -181,16 +181,22 @@ class Welcome(commands.Cog):
 
     @commands.command()
     async def m_preview_wb(self, ctx):
-        """User requests a Welcome Blolck to view"""
+        """User requests a Welcome Block to view"""
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
             return
 
+        author_id = ctx.author.id
+        if not await is_process_and_user_clear(self.bot, 'm_preview_wb'
+                                               author_id):
+            return False
+        self.bot.processes['m_preview_wb'] = author_id
+
         await ctx.send('What block would you like to search for to preview? '
                        'Alternatively, write \'cancel\' to cancel.')
 
-        # Check used for correspondance with the user
+        # The check used for correspondance with the user
         def check(m):
             return (
                 asyncless_is_moderator(m) and  # Possibly redundant
@@ -200,6 +206,8 @@ class Welcome(commands.Cog):
             )
 
         name_msg = await self.bot.wait_for('message', check=check)
+        if await self.is_wanting_cancel(name_msg, 'm_preview_wb'):
+            return
         # Path must be the requested name, plus the .json file extension
         block_path = os.path.join(
                 'server_specific/welcome_blocks',
@@ -209,6 +217,7 @@ class Welcome(commands.Cog):
             data_dict = json.loads(block_file.read())
 
         await self.send_block(data_dict, ctx)
+        self.bot.processes['m_preview_wb'] = None
 
     @commands.command()
     async def m_view_wb_queue(self, ctx):
