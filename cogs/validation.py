@@ -56,9 +56,9 @@ async def is_process_and_user_clear(bot, command, author_id):
             )
             return False
 
-    # Check if someone is already in this process 
+    # Check if someone is already in this process
     if 'm_make_wb' in bot.processes:
-        if self.bot.processes['m_make_wb'] != None:
+        if self.bot.processes['m_make_wb'] is not None:
             ctx.send(
                 '<@{}> - Another user is busy in this process - please '
                 'wait for the process to become free '
@@ -84,11 +84,11 @@ class ModeratorChecking(commands.Cog):
 
         with open(Path('server_specific/moderators.txt'), 'r') as mod_file:
             moderator_ids = mod_file.readlines()
-        
+
         for moderator_id in moderator_ids:
             moderator = self.bot.get_user(int(moderator_id))
             if not moderator:
                 await ctx.send('Unknown')
             else:
-                await ctx.send(moderator.name) 
+                await ctx.send(moderator.name)
         await ctx.send('Finished!')

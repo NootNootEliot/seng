@@ -1,8 +1,9 @@
 from discord.ext import commands
 from pathlib import Path
 from .validation import (is_moderator, is_mod_commands_channel,
-        asyncless_is_moderator, asyncless_is_mod_commands_channel,
-        is_process_and_user_clear)
+                         asyncless_is_moderator,
+                         asyncless_is_mod_commands_channel,
+                         is_process_and_user_clear)
 import json
 import os
 import discord
@@ -29,7 +30,7 @@ class Welcome(commands.Cog):
         elif data_dict['type'] == 'embed':
             block_embed = discord.Embed.from_dict(data_dict['embed_dict'])
             await channel.send(embed=block_embed)
-    
+
     async def is_wanting_cancel(self, message, command):
         if message.content == 'cancel':
             await message.channel.send('Cancelling the procecss.')
@@ -44,7 +45,7 @@ class Welcome(commands.Cog):
             return
         if not await is_mod_commands_channel(ctx):
             return
-        
+
         send_string = ''
         for welcome_block in os.listdir('server_specific/welcome_blocks'):
             if welcome_block.startswith('_'):  # Ignore _block_queue
@@ -62,7 +63,7 @@ class Welcome(commands.Cog):
             return
 
         author_id = ctx.author.id
-        if not await is_process_and_user_clear(self.bot, 'm_make_wb', 
+        if not await is_process_and_user_clear(self.bot, 'm_make_wb',
                                                author_id):
             return
         # Add user to the process
@@ -72,7 +73,7 @@ class Welcome(commands.Cog):
                        'proceses to cancel it.\nPlease enter a name to '
                        'reference the block: (Note that entering the name of '
                        'an existing block will overwrite it.)')
-        
+
         # Check used for correspondance with the user
         def check(m):
             return (
@@ -86,20 +87,20 @@ class Welcome(commands.Cog):
         if await self.is_wanting_cancel(name_msg, 'm_make_wb'):
             return
         while True:
-            await ctx.send('Is this block a text type (normal text characters, '
-                           'including media links), or an embed type (the '
+            await ctx.send('Is this block a text type (normal text characters,'
+                           ' including media links), or an embed type (the '
                            'Discord \'boxes\'? Please enter either \'embed\' '
                            'or \'text\'.')
             type_msg = await self.bot.wait_for('message', check=check)
             if await self.is_wanting_cancel(type_msg, 'm_make_wb'):
                 return
-            
+
             # Make sure that the type_msg is valid
             if type_msg.content not in ['text', 'embed']:
                 await ctx.send('Please enter either \'text\' or \'embed\'.')
             else:
                 break
-        
+
         # Request further information depending on the type of block
         if type_msg.content == 'text':
             await ctx.send('Please enter and send the text that you would '
@@ -151,7 +152,7 @@ class Welcome(commands.Cog):
                 if is_val_error:
                     continue
                 break
-        
+
         # Construct dictionary for block storage
         data_dict = {}
         data_dict['title'] = name_msg.content
@@ -166,7 +167,7 @@ class Welcome(commands.Cog):
 
             # Edit the colour for storage use
             embed_dict['color'] = int(str(colour).lstrip('#'), 16)
-            
+
             # 'rich ' is the default
             embed_dict['type'] = 'rich'
             data_dict['embed_dict'] = embed_dict
@@ -250,7 +251,7 @@ class Welcome(commands.Cog):
             return
 
         author_id = ctx.author.id
-        if not await is_process_and_user_clear(self.bot, 'm_add_wb_to_queue', 
+        if not await is_process_and_user_clear(self.bot, 'm_add_wb_to_queue',
                                                author_id):
             return
         # Add user to the process
@@ -270,7 +271,7 @@ class Welcome(commands.Cog):
         add_block_msg = await self.bot.wait_for('message', check=check)
         if self.is_wanting_cancel(add_block_msg, 'm_add_wb_to_queue'):
             return
-        
+
         # TODO: Make sure that any blocks added actually exist
         block_queue_path = 'server_specific/welcome_blocks/_block_queue'
         with open(Path(block_queue_path), 'a+') as block_queue_file:
@@ -311,7 +312,7 @@ class Welcome(commands.Cog):
 
         author_id = ctx.author.id
         if not await is_process_and_user_clear(self.bot,
-                                               'm_remove_wb_from_queue', 
+                                               'm_remove_wb_from_queue',
                                                author_id):
             return
         # Add user to the process
@@ -334,7 +335,7 @@ class Welcome(commands.Cog):
         block_queue_path = 'server_specific/welcome_blocks/_block_queue'
         with open(Path(block_queue_path), 'r') as block_queue_file:
             blocks = block_queue_file.read().splitlines()
-        
+
         open(Path(block_queue_path), 'w').close()  # Erase entire file
 
         with open(Path(block_queue_path), 'a') as block_queue_file:
