@@ -10,10 +10,10 @@ class MemberStats(commands.Cog):
 
     @commands.command()
     async def m_stats(self, ctx):
-        # if not await is_moderator(ctx):
-        #    return
-        #if not await is_mod_commands_channel(ctx):
-        #    return
+        if not await is_moderator(ctx):
+            return
+        if not await is_mod_commands_channel(ctx):
+            return
 
         with open('./server_specific/channel_ids_test.json', 'r') as id_file:
             channel_id_dict = json.loads(id_file.read())
