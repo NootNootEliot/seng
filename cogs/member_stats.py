@@ -16,7 +16,7 @@ class MemberStats(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
 
-        with open('./server_specific/channel_ids_test.json', 'r') as id_file:
+        with open('./server_specific/channel_ids.json', 'r') as id_file:
             channel_id_dict = json.loads(id_file.read())
             guild_id = channel_id_dict['GUILD']
             guild = self.bot.get_guild(guild_id)
