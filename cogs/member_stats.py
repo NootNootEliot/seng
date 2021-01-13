@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 from pathlib import Path
 from .validation import is_moderator, is_mod_commands_channel
@@ -23,10 +24,10 @@ class MemberStats(commands.Cog):
             true_member_count = 0
             member_online_count = 0
 
-            async for member in guild.fetch_members(limit=None):
+            for member in guild.members:
                 if not member.bot:
                     true_member_count += 1
-                    if member.status != "offline":
+                    if member.status == discord.Status.online:
                         member_online_count += 1
 
             await ctx.send(f'Total members: {true_member_count}')
