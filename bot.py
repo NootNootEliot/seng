@@ -12,10 +12,9 @@ from cogs.member_stats import MemberStats
 from cogs.channel_stats import ChannelStats
 from cogs.seng_info import PrivacyPolicy
 
-intents = discord.Intents.default()
-intents.members = True
+intents = discord.Intents.all()
 
-bot = commands.Bot(command_prefix='$')
+bot = commands.Bot(command_prefix='$', intents=intents)
 
 # Seng should keep track of which users are using which of Seng's processes,
 # as some processes may only be 'user-safe' with a single user. We track this
