@@ -27,7 +27,7 @@ class MemberStats(commands.Cog):
             for member in guild.members:
                 if not member.bot:
                     true_member_count += 1
-                    if member.status == discord.Status.online:
+                    if member.status != discord.Status.offline:
                         member_online_count += 1
 
             await ctx.send(f'Total members: {true_member_count}')
