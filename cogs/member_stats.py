@@ -4,6 +4,7 @@ from pathlib import Path
 from .validation import is_moderator, is_mod_commands_channel
 import json
 
+
 class MemberStats(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
