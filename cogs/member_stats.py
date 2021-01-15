@@ -56,7 +56,7 @@ class MemberStats(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
 
-        if self.isRecording True:
+        if self.isRecording:
             await ctx.send(f'statistics recording is running')
         else:
             await ctx.send(f'statistics recording NOT running')
@@ -68,7 +68,7 @@ class MemberStats(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
 
-        if self.isRecording True:
+        if self.isRecording:
             await ctx.send(f'first stop statistics recording ($m_stats_stop)')
         else:
             if path.exists('./server_specific/member_stats.csv'):
