@@ -13,7 +13,6 @@ from dateutil import tz
 
 
 class MemberStats(commands.Cog):
-
     def __init__(self, bot):
         self.bot = bot
         self.isRecording = False
@@ -35,9 +34,6 @@ class MemberStats(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
 
-        author_id = ctx.author.id
-        if not await is_process_and_user_clear(self.bot, 'm_stats_start', ctx):
-            return
         self.m_stats.start(ctx)
         self.isRecording = True
         await ctx.send(f'statistics recording started')
@@ -48,9 +44,7 @@ class MemberStats(commands.Cog):
             return
         if not await is_mod_commands_channel(ctx):
             return
-        author_id = ctx.author.id
-        if not await is_process_and_user_clear(self.bot, 'm_stats_stop', ctx):
-            return
+        
         self.m_stats.cancel()
         self.isRecording = False
         await ctx.send(f'statistics recording stopped')
@@ -62,11 +56,7 @@ class MemberStats(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
 
-        author_id = ctx.author.id
-        if not await is_process_and_user_clear(self.bot, 'm_stats_status',
-                                               ctx):
-            return
-        if self.isRecording is True:
+        if self.isRecording True:
             await ctx.send(f'statistics recording is running')
         else:
             await ctx.send(f'statistics recording NOT running')
@@ -78,10 +68,7 @@ class MemberStats(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
 
-        author_id = ctx.author.id
-        if not await is_process_and_user_clear(self.bot, 'm_stats_show', ctx):
-            return
-        if self.isRecording is True:
+        if self.isRecording True:
             await ctx.send(f'first stop statistics recording ($m_stats_stop)')
         else:
             if path.exists('./server_specific/member_stats.csv'):
@@ -118,7 +105,6 @@ class MemberStats(commands.Cog):
         await ctx.send(f'clear stats file? \'y\' or \'n\'')
 
         while True:
-
             yes_no_msg = await self.bot.wait_for('message',  check=check)
 
             if yes_no_msg.content not in ['Y',  'y',  'N',  'n']:
@@ -163,9 +149,9 @@ class MemberStats(commands.Cog):
             my_now = utc_now.replace(tzinfo=from_zone)
             now = my_now.astimezone(to_zone)
 
+            tsYear = now.strftime("%Y")
             tsMonth = now.strftime("%m")
             tsDay = now.strftime("%d")
-            tsYear = now.strftime("%Y")
             tsHour = now.strftime("%H")
             tsMinute = now.strftime("%M")
             tsSecond = now.strftime("%S")
