@@ -44,7 +44,7 @@ class MemberStats(commands.Cog):
             return
         if not await is_mod_commands_channel(ctx):
             return
-        
+
         self.m_stats.cancel()
         self.isRecording = False
         await ctx.send(f'statistics recording stopped')
