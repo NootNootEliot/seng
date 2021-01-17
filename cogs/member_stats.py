@@ -68,18 +68,15 @@ class MemberStats(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
 
-        if self.isRecording:
-            await ctx.send(f'first stop statistics recording ($m_stats_stop)')
+        if path.exists('./server_specific/member_stats.csv'):
+            with open('./server_specific/member_stats.csv',
+                      'r') as stats_file:
+                contents = stats_file.read()
+                await ctx.send('note: recorded timezone is PST (UTC -8)')
+                await ctx.send(f'{contents}')
+                stats_file.close()
         else:
-            if path.exists('./server_specific/member_stats.csv'):
-                with open('./server_specific/member_stats.csv',
-                          'r') as stats_file:
-                    contents = stats_file.read()
-                    await ctx.send('note: recorded timezone is PST (UTC -8)')
-                    await ctx.send(f'{contents}')
-                    stats_file.close()
-            else:
-                await ctx.send(f'could not find the stats file!')
+            await ctx.send(f'could not find the stats file!')
 
     @commands.command()
     async def m_stats_clear(self, ctx):
