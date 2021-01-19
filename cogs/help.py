@@ -86,7 +86,7 @@ class GetHelp(commands.Cog):
             return
         if not await is_mod_commands_channel(ctx):
             return
-        
+
         help_string = (
             'Currently, `m_stats` refers to the persistent recording of '
             'how many members the server has in total, and how many of those '
