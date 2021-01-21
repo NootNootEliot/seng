@@ -1,6 +1,7 @@
 import sys
 import os
 import shutil
+import subprocess
 from pathlib import Path
 from distutils.dir_util import copy_tree
 
@@ -51,6 +52,15 @@ if os.path.basename(os.path.normpath(os.getcwd())) != 'seng':
     print('Exiting.')
     sys.exit()
 
+# Check for the existence of the public key
+if os.exists(Path('./private/public_key.txt')):
+    print('Public key found.')
+else:
+    print('Could not find public_key.txt. Please place it in the \'private\'
+          'directory.')
+    print('Exiting.')
+    sys.exit()
+
 # Try to make a new data pack
 try:
     os.mkdir(Path('./data_pack'))
@@ -74,4 +84,6 @@ for dir_path in directories_to_save:
     dest_path = Path(os.path.join('./data_pack', dir_path))
     shutil.copytree(Path(dir_path), dest_path)
 
-print('Success - data pack created.')
+print('Success - data pack created. Now preparing to encrypt..')
+# Run script which encrypts data pack immediately using the public key.
+subprocess.call(['sh', './encrypt_data_pack.sh'])
