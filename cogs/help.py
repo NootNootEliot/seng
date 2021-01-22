@@ -30,6 +30,8 @@ class GetHelp(commands.Cog):
             'permissions.\n'
             '`m_help_welcome_blocks` - List information for using the welcome '
             'block.\n'
+            '`m_help_stats` - List help information for using the `m_stats`'
+            'functionality.\n'
         )
         await ctx.send(help_string)
 
@@ -75,5 +77,27 @@ class GetHelp(commands.Cog):
             'If you would like to send media, please select the \'text\' '
             'option when making a welcome_blolck, and **paste** a **Discord**'
             ' link of the media.'
+        )
+        await ctx.send(help_string)
+
+    @commands.command()
+    async def m_help_stats(self, ctx):
+        if not await is_moderator(ctx):
+            return
+        if not await is_mod_commands_channel(ctx):
+            return
+
+        help_string = (
+            'Currently, `m_stats` refers to the persistent recording of '
+            'how many members the server has in total, and how many of those '
+            'members are online. Available commands are below:\n\n'
+            '`m_stats_start` - Start the hourly recording of member counts.\n'
+            '`m_stats_stop` - Stop the hourly recording of member counts.\n'
+            '`m_stats_status` - Seng will inform you whether it\'s actively '
+            'recording counts or not.\n'
+            '`m_stats_show` - See a representation of the information that '
+            'Seng has collected.\n'
+            '`m_stats_clear` - Warning: This command will erase all `m_stats` '
+            'data that Seng has in active storage.'
         )
         await ctx.send(help_string)
