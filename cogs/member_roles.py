@@ -8,12 +8,12 @@ from .validation import (is_moderator, is_mod_commands_channel,
 import json
 import os
 from os import path
+import random
 
 
 class MemberRoles(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.response_reference = 0
         self.responses = ["Great introduction ",
                           "Thank you for introducing yourself ",
                           "Glad to have you onboard ",
@@ -34,13 +34,13 @@ class MemberRoles(commands.Cog):
             return
         if not await is_mod_commands_channel(ctx):
             return
+
         if message.channel.id == self.meet_our_members_id:
             if not message.author.bot:
                 msg = message
-                self.response_reference += 1
-                if self.response_reference > (len(self.responses) - 1):
-                    self.response_reference = 0
-                announcement = self.responses[self.response_reference] + \
+                upper_range = len(self.responses) - 1
+                response_reference = random.randint(0, upper_range)
+                announcement = self.responses[response_reference] + \
                     message.author.name + "!"
                 await message.channel.send(announcement)
                 tourist_role = discord.utils.get(message.guild.roles,
