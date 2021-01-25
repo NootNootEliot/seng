@@ -38,7 +38,8 @@ class MemberRoles(commands.Cog):
         if message.channel.id == self.meet_our_members_id:
             if not message.author.bot:
                 upper_range = len(self.responses) - 1
-                announcement = self.responses[random.randint(0, upper_range)] + \
+                announcement = self.responses[random.randint(
+                    0, upper_range)] + \
                     message.author.name + "!" + "  \U0001F973" \
                     " Congratulations on becoming a resident!"
                 await message.channel.send(announcement)
