@@ -31,9 +31,9 @@ with open(Path('./private/priv_data.json'), 'r') as data_file:
     token = json.loads(data_file.read())['TOKEN']
 
 bot.remove_command('help')  # Overwrite normal 'help' command
-# bot.add_cog(CommandErrorHandler(bot))
+#bot.add_cog(CommandErrorHandler(bot))
 bot.add_cog(MemberStats(bot))
-# bot.add_cog(MemberRoles(bot))
+#bot.add_cog(MemberRoles(bot))
 bot.add_cog(ChannelStats(bot))
 bot.add_cog(Greetings(bot))
 bot.add_cog(Welcome(bot))

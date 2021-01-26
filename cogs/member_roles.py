@@ -40,7 +40,7 @@ class MemberRoles(commands.Cog):
                 upper_range = len(self.responses) - 1
                 announcement = self.responses[random.randint(
                     0, upper_range)] + \
-                    message.author.name + "!" + "  \U0001F973" \
+                    message.author.name + "!  \U0001F973" \
                     " Congratulations on becoming a resident!"
                 await message.channel.send(announcement)
                 tourist_role = discord.utils.get(message.guild.roles,
@@ -51,4 +51,3 @@ class MemberRoles(commands.Cog):
                     if role.name == "Tourist":
                         await message.author.remove_roles(tourist_role)
                         await message.author.add_roles(resident_role)
-        return
