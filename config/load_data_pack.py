@@ -84,7 +84,7 @@ for req_dir in required_directories:
         os.mkdir(req_dir)
     except FileExistsError:
         # The directory already exists, so we ask the user if they'd like it
-        # replaced 
+        # replaced
         while True:
             yes_no = input(
                 'The directory \'{}\' already exists. Would you like to '
@@ -106,7 +106,7 @@ for root, dirs, files in os.walk(Path('./data_pack')):
         data_path = os.path.join(root, name)  # File in data_pack's path
         # Destination in 'seng' directory for file to go
         insert_path = data_path.replace('data_pack/', '')
-        
+
         # Check if the file already exists
         if os.path.isfile(insert_path):
             while True:
