@@ -53,10 +53,10 @@ if os.path.basename(os.path.normpath(os.getcwd())) != 'seng':
     sys.exit()
 
 # Check for the existence of the public key
-if os.exists(Path('./private/public_key.txt')):
+if os.path.exists(Path('./private/public_key.txt')):
     print('Public key found.')
 else:
-    print('Could not find public_key.txt. Please place it in the \'private\'
+    print('Could not find public_key.txt. Please place it in the \'private\' '
           'directory.')
     print('Exiting.')
     sys.exit()
@@ -65,7 +65,7 @@ else:
 try:
     os.mkdir(Path('./data_pack'))
 except FileExistsError:  # Only one data pack allowed
-    print('data_pack already exists - only one data pack allowed!. Please 
+    print('data_pack already exists - only one data pack allowed!. Please '
           'delete it and try again.')
     print('Exiting.')
     sys.exit()
@@ -86,4 +86,4 @@ for dir_path in directories_to_save:
 
 print('Success - data pack created. Now preparing to encrypt..')
 # Run script which encrypts data pack immediately using the public key.
-subprocess.call(['sh', './encrypt_data_pack.sh'])
+subprocess.call(['sh', './config/encrypt_data_pack.sh'])

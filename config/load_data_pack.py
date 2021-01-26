@@ -1,6 +1,7 @@
 import sys
 import os
 import shutil
+import subprocess
 from pathlib import Path
 
 required_directories = [
@@ -60,7 +61,7 @@ if os.path.exists('./data_pack.tar.gz.age'):
         print('Exiting.')
         sys.exit()
     print('Attempting decryption..')
-    subprocess.call(['sh', './decrypt_data_pack.sh'])
+    subprocess.call(['sh', './config/decrypt_data_pack.sh'])
 
 # Check that the data_pack directory exists
 if os.path.exists('./data_pack'):
