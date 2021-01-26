@@ -12,10 +12,14 @@ required_directories = [
 if len(sys.argv) > 1:
     if sys.argv[1].lower() in ['help', 'h']:
         print(
-            'This script will load the \'data_pack\' directory, and will then '
-            'load those files contained within \'data_pack\' to seng\'s '
-            'directory. Typically, this script should be ran after a \'git '
-            'clone \' is performed.'
+            'Requirements:\n'
+            ' - data_pack.tar.gz.age should be present within the seng '
+            'directory.\n'
+            ' - No other files with \'data_pack\' in the name should exist '
+            'anywhere else witin the file tree.\n'
+            'This script attempts decryption of the encrypted data_pack file, '
+            'ultimately followed by loading of files within the data_pack '
+            'into their corresponding locations.'
         )
     else:
         print('I didn\'t recognise that argument.')
@@ -38,6 +42,26 @@ if os.path.basename(os.path.normpath(os.getcwd())) != 'seng':
     print('Exiting.')
     sys.exit()
 
+# Check if there's already a data_pack folder, which would be strange
+if os.path.exists('./data_pack'):
+    print('Error: data_pack directory already exists. Please remove it and '
+          'decrypt from an encrypted data pack.')
+    print('Exiting.')
+    sys.exit()
+
+# Check if encrypted data pack exists
+if os.path.exists('./data_pack.tar.gz.age'):
+    print('Encrypted data_pack found.')
+    if os.path.exists('./private/key.txt'):
+        print('Found key.')
+    else:
+        print('I could not find the private key. Ensure that the key.txt file'
+              'is kept within the /private directory.')
+        print('Exiting.')
+        sys.exit()
+    print('Attempting decryption..')
+    subprocess.call(['sh', './decrypt_data_pack.sh'])
+
 # Check that the data_pack directory exists
 if os.path.exists('./data_pack'):
     # Check that data_pack is a directory
@@ -48,7 +72,7 @@ if os.path.exists('./data_pack'):
 else:
     print(
         'Error: Could not locate data_pack. Is it inside the \'seng\' '
-        'directory?'
+        'directory? Have you decrypted the data_pack?'
     )
     print('Exiting.')
     sys.exit()
@@ -99,3 +123,6 @@ for root, dirs, files in os.walk(Path('./data_pack')):
         else:
             shutil.copyfile(data_path, insert_path)
 print('\nSuccess - data loading complete.')
+print('Deleting the data_pack directory:')
+shutil.rmtree('./data_pack')
+print('Data pack loading complete.')
