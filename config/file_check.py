@@ -9,6 +9,8 @@ print('-'*10 + '\nERRORS\n' + '-'*10)
 #####################
 paths = [
     'private/priv_data.json',
+    'private/key.txt',
+    'private/priv_data.json',
     'server_specific/moderators.txt',
     'server_specific/channel_ids.json',
     'server_specific/welcome_blocks/',
