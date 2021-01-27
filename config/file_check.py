@@ -1,6 +1,26 @@
+import sys
 import os
 import json
 from pathlib import Path
+
+# Check if user is requesting help on this script
+if len(sys.argv) > 1:
+    if sys.argv[1].lower() in ['help', 'h']:
+        print(
+            'This script is used to conduct multiple tests within the Seng '
+            'directory, to try and help ensure that the necessary files exist '
+            'and are set-up correctly. The script must be ran within the root '
+            'directory of Seng, and the script will output the errors it '
+            'encounters. It\'s recommended to run the load_data_pack.py '
+            'script before running this script, as loading the data pack\'s '
+            'files will likely fix some errors you\'d encounter without '
+            'loading the data pack.'
+        )
+        sys.exit()
+    else:
+        print('I didn\'t recognise that argument.')
+        print('Exiting.')
+        sys.exit()
 
 test_dict = {}
 print('-'*10 + '\nERRORS\n' + '-'*10)
