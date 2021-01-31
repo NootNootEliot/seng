@@ -23,7 +23,11 @@ if len(sys.argv) > 1:
         sys.exit()
 
 test_dict = {}
-print('-'*10 + '\nERRORS\n' + '-'*10)
+print('-'*42 + '\nERRORS: \n - Solving errors in order from top to bottom is '
+      'recommended.\n - Not all errors need to be solved, but the more errors '
+      'solved, the better Seng\'s functionality is likely to work.\n\n')
+
+
 #####################
 # General Path Test #
 #####################
@@ -75,10 +79,6 @@ test_dict['Crypto Key Test'] = (attained_passes, max_passes)
 if not os.path.exists('server_specific/channel_ids.json'):
     pass  # Do nothing, as this is covered by General Path Test
 
-# Get the dictionary
-with open('server_specific/channel_ids.json', 'r') as channel_ids_file:
-    channel_dict = json.loads(channel_ids_file.read())
-
 # Keys to test for
 expected_keys = [
     'GUILD',
@@ -87,8 +87,16 @@ expected_keys = [
     'MEET_OUR_MEMBERS'
 ]
 
-# Test that the above keys exist in channel_ids.json
+# Get the dictionary
 fails = 0
+with open('server_specific/channel_ids.json', 'r') as channel_ids_file:
+    try:
+        channel_dict = json.loads(channel_ids_file.read())
+    except json.decoder.JSONDecodeError:
+        print('channel_ids.json Test Error: Unable to load channel_ids.json')
+        channel_dict = {}  # Empty dictionary for fails later
+
+# Test that the above keys exist in channel_ids.json
 for key in expected_keys:
     if key not in channel_dict.keys():
         fails += 1
@@ -98,6 +106,57 @@ for key in expected_keys:
 max_passes = len(expected_keys)
 attained_passes = max_passes - fails
 test_dict['channel_ids.json Test'] = (attained_passes, max_passes)
+
+
+##########################
+# Default Template Test #
+##########################
+# Checks if user has changed template files from the default or not
+
+# moderators.txt
+fails = 0
+if os.path.exists('server_specific/moderators.txt'):
+    with open('server_specific/moderators.txt') as moderators_file:
+        mod_list = moderators_file.readlines()
+        if '<Moderator_ID_1>\n' in mod_list:
+            print('Default Template Test Error: Possible template file '
+                  'detected for server_specific/moderators.txt. Please amend '
+                  'it with the correct data.')
+            fails += 1
+else:
+    print('Default Template Test Error: Unable to locate '
+          'server_specific/moderators.txt')
+    fails += 1
+
+# channel_ids.json
+if os.path.exists('server_specific/channel_ids.json'):
+    with open('server_specific/channel_ids.json') as moderators_file:
+        if "<id>" in moderators_file.read():
+            print('Default Template Test Error: Possible template file '
+                  'detected for server_specific/channel_ids.json. Please '
+                  'amend it with the correct data.')
+            fails += 1
+else:
+    print('Default Template Test Error: Unable to locate '
+          'server_specific/channel_ids.json')
+    fails += 1
+
+# private/priv_data.json
+if os.path.exists('private/priv_data.json'):
+    with open('private/priv_data.json') as private_data_file:
+        if "<token>" in private_data_file.read():
+            print('Default Template Test Error: Possible template file '
+                  'detected for private/priv_data.json. Please '
+                  'amend it with the correct data.')
+            fails += 1
+else:
+    print('Default Template Test Error: Unable to locate '
+          'private/priv_data.json')
+    fails += 1
+
+max_passes = 3  # Manually edit
+attained_passes = max_passes - fails
+test_dict['Default Template Test'] = (attained_passes, max_passes)
 
 
 ###########
