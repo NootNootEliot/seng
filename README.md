@@ -5,7 +5,7 @@ Network.
 ### Installation for Development
 1. Clone this repository to your local machine.
 2. Install `poetry`, the dependency manager that Seng uses.
-    - To install `poetry`, check their [documentation].(https://python-poetry.org/)
+    - To install `poetry`, check their [documentation](https://python-poetry.org/).
 3. `cd` into this project's main directory.
 4. Run `poetry install`.
 5. Run `poetry shell`.
@@ -13,9 +13,10 @@ Network.
 
 ### Set-Up: General
  - To test locally, you will need to create a 'Bot' application within the
- [Discord Developer Portal].(https://discord.com/developers/docs/intro)
+ [Discord Developer Portal](https://discord.com/developers/docs/intro).
  - To use any encryption/decryption features, please install
- [age](https://github.com/FiloSottile/age) onto your local machine.
+ [age](https://github.com/FiloSottile/age) onto your local machine. For more
+ info, please see the **Using Encryption/Decryption features** section.
 
 ### Set-Up: Without a data pack
  - If you do not have a data pack, then you may want to consider using
