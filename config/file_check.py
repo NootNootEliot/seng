@@ -105,7 +105,7 @@ test_dict['channel_ids.json Test'] = (attained_passes, max_passes)
 ###########
 total_attained_passes = 0
 total_max_passes = 0
-print('\n'+ '-'*25 + '\nTEST RESULTS OVERVIEW\n' + '-'*25)
+print('\n'+ '-'*41 + '\nTEST RESULTS OVERVIEW\n' + '-'*41)
 
 # Print out pass information for each test type
 for test_type, pass_info in test_dict.items():
@@ -119,3 +119,4 @@ for test_type, pass_info in test_dict.items():
 print('Total Tests: ')
 print('\tPassed {} out of {} total tests.'.format(str(total_attained_passes),
                                                   str(total_max_passes)))
+print('-'*41)
