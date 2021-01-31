@@ -64,7 +64,7 @@ for key_path in key_paths:
         fails += 1
         print('Crypto Key Test Error: Failed to find: ' + key_path)
 
-max_passes = len(paths)
+max_passes = len(key_paths)
 attained_passes = max_passes - fails
 test_dict['Crypto Key Test'] = (attained_passes, max_passes)
 
