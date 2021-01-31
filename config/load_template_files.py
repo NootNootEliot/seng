@@ -26,7 +26,7 @@ if os.path.basename(os.path.normpath(os.getcwd())) != 'seng':
 # Directories needed for specific, individual files
 required_directories = [
     'server_specific',
-    'server_specific/welcome_blocks'
+    'server_specific/welcome_blocks',
     'private'
 ]
 
