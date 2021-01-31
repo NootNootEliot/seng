@@ -27,7 +27,7 @@ print('-'*10 + '\nERRORS\n' + '-'*10)
 #####################
 # General Path Test #
 #####################
-paths = [
+general_paths = [
     'private/priv_data.json',
     'private/key.txt',
     'private/priv_data.json',
@@ -39,14 +39,34 @@ paths = [
 
 # Test that the paths above exist
 fails = 0
-for some_path in paths:
+for some_path in general_paths:
     if not os.path.exists(some_path):
         fails += 1
         print('General Path Test Error: Failed to find path: ' + some_path)
 
-max_passes = len(paths)
+max_passes = len(general_paths)
 attained_passes = max_passes - fails
 test_dict['General Path Test'] = (attained_passes, max_passes)
+
+
+###################
+# Crypto Key Test #
+###################
+key_paths = [
+    'private/key.txt',
+    'private/public_key.txt'
+]
+
+# Tests that the paths above exist
+fails = 0
+for key_path in key_paths:
+    if not os.path.exists(key_path):
+        fails += 1
+        print('Crypto Key Test Error: Failed to find: ' + key_path)
+
+max_passes = len(paths)
+attained_passes = max_passes - fails
+test_dict['Crypto Key Test'] = (attained_passes, max_passes)
 
 
 #########################
