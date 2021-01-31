@@ -72,10 +72,10 @@ for root, dirs, files in os.walk('./config/template_files'):
                     print('Please enter either \'y\' or \'n\'.')
             if yes_no.lower() in ['y', 'yes']:
                 # Replace the file
-                shutil.copyfile(data_path, insert_path)
+                shutil.copyfile(file_path, insert_path)
         else:
             # File does not already exist - replace it
-            shutil.copyfile(data_path, insert_path)
+            shutil.copyfile(file_path, insert_path)
 print('\nSuccess - templates file have been loaded in. Please now edit the '
       'template files within seng, with the correct details. You can run '
       'file_check.py to help ensure that things have been set-up correctly.')
