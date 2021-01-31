@@ -35,6 +35,7 @@ print('Creating required directories:')
 for req_dir in required_directories:
     try:
         os.mkdir(req_dir)
+        yes_no = 'no'  # Set to 'no' to ignore conditional below
     except FileExistsError:
         yes_no = input(
             'The directory \'{}\' already exists. Would you like to '
