@@ -57,7 +57,7 @@ for root, dirs, files in os.walk('./config/template_files'):
 
         # Modify file path to model seng's filetree
         insert_path = file_path.replace('config/template_files/', '')
-        
+
         # Check if file already exists in seng filetree
         if os.path.isfile(insert_path):
             # Ask user if they'd like to replace the file

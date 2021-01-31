@@ -97,7 +97,8 @@ try:
         try:
             channel_dict = json.loads(channel_ids_file.read())
         except json.decoder.JSONDecodeError:
-            print('channel_ids.json Test Error: Unable to load channel_ids.json')
+            print('channel_ids.json Test Error: Unable to load '
+                  'channel_ids.json')
             channel_dict = {}  # Empty dictionary for fails later
 except FileNotFoundError:
     print('channel_ids.json Test Error: Unable to locate channel_ids.json')
@@ -171,7 +172,7 @@ test_dict['Default Template Test'] = (attained_passes, max_passes)
 ###########
 total_attained_passes = 0
 total_max_passes = 0
-print('\n'+ '-'*42 + '\nTEST RESULTS OVERVIEW\n' + '-'*42)
+print('\n' + '-'*42 + '\nTEST RESULTS OVERVIEW\n' + '-'*42)
 
 # Print out pass information for each test type
 for test_type, pass_info in test_dict.items():
