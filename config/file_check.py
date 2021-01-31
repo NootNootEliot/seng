@@ -90,13 +90,17 @@ expected_keys = [
 
 # Get the dictionary
 fails = 0
-with open('server_specific/channel_ids.json', 'r') as channel_ids_file:
-    # Be wary of incorrectly formatted json files
-    try:
-        channel_dict = json.loads(channel_ids_file.read())
-    except json.decoder.JSONDecodeError:
-        print('channel_ids.json Test Error: Unable to load channel_ids.json')
-        channel_dict = {}  # Empty dictionary for fails later
+try:
+    with open('server_specific/channel_ids.json', 'r') as channel_ids_file:
+        # Be wary of incorrectly formatted json files
+        try:
+            channel_dict = json.loads(channel_ids_file.read())
+        except json.decoder.JSONDecodeError:
+            print('channel_ids.json Test Error: Unable to load channel_ids.json')
+            channel_dict = {}  # Empty dictionary for fails later
+except FileNotFoundError:
+    print('channel_ids.json Test Error: Unable to locate channel_ids.json')
+    channel_dict = {}  # Empty dictionoary for fails later
 
 # Test that the above keys exist in channel_ids.json
 for key in expected_keys:
