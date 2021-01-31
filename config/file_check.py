@@ -12,9 +12,9 @@ if len(sys.argv) > 1:
             'and are set-up correctly. The script must be ran within the root '
             'directory of Seng, and the script will output the errors it '
             'encounters. It\'s recommended to run the load_data_pack.py '
-            'script before running this script, as loading the data pack\'s '
-            'files will likely fix some errors you\'d encounter without '
-            'loading the data pack.'
+            'script before running this script, if you have a data_pack, as '
+            'loading the data pack\'s files will likely fix some errors '
+            'you\'d encounter without loading the data pack.'
         )
         sys.exit()
     else:
@@ -23,6 +23,7 @@ if len(sys.argv) > 1:
         sys.exit()
 
 test_dict = {}
+# Print Error information overview
 print('-'*42 + '\nERRORS: \n - Solving errors in order from top to bottom is '
       'recommended.\n - Not all errors need to be solved, but the more errors '
       'solved, the better Seng\'s functionality is likely to work.\n\n')
@@ -90,6 +91,7 @@ expected_keys = [
 # Get the dictionary
 fails = 0
 with open('server_specific/channel_ids.json', 'r') as channel_ids_file:
+    # Be wary of incorrectly formatted json files
     try:
         channel_dict = json.loads(channel_ids_file.read())
     except json.decoder.JSONDecodeError:
@@ -164,7 +166,7 @@ test_dict['Default Template Test'] = (attained_passes, max_passes)
 ###########
 total_attained_passes = 0
 total_max_passes = 0
-print('\n'+ '-'*41 + '\nTEST RESULTS OVERVIEW\n' + '-'*41)
+print('\n'+ '-'*42 + '\nTEST RESULTS OVERVIEW\n' + '-'*42)
 
 # Print out pass information for each test type
 for test_type, pass_info in test_dict.items():
@@ -178,4 +180,4 @@ for test_type, pass_info in test_dict.items():
 print('Total Tests: ')
 print('\tPassed {} out of {} total tests.'.format(str(total_attained_passes),
                                                   str(total_max_passes)))
-print('-'*41)
+print('-'*42)
