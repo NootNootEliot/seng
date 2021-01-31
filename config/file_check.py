@@ -26,7 +26,8 @@ test_dict = {}
 # Print Error information overview
 print('-'*42 + '\nERRORS: \n - Solving errors in order from top to bottom is '
       'recommended.\n - Not all errors need to be solved, but the more errors '
-      'solved, the better Seng\'s functionality is likely to work.\n\n')
+      'solved, the better Seng\'s functionality is likely to work.\n - Errors '
+      'which are not vital to solve are labelled as \'Warning\'s.\n\n')
 
 
 #####################
@@ -67,7 +68,7 @@ fails = 0
 for key_path in key_paths:
     if not os.path.exists(key_path):
         fails += 1
-        print('Crypto Key Test Error: Failed to find: ' + key_path)
+        print('Crypto Key Test Warning: Failed to find: ' + key_path)
 
 max_passes = len(key_paths)
 attained_passes = max_passes - fails
