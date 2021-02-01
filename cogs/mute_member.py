@@ -41,7 +41,7 @@ class MuteMember(commands.Cog):
         # Get message obj of username and four digit discriminator
         await ctx.send(
             'Please enter the username and the four digits of the user to '
-            'mute/unmute, wrapped in backticks (\`). For example, '
+            'mute/unmute, wrapped in backticks (\\`). For example, '
             '`toxicPerson#1773`. Write \'cancel\' to cancel.'
         )
         # Add moderator to processes
@@ -75,8 +75,8 @@ class MuteMember(commands.Cog):
         # Get the guild
         guild = self.get_guild()
         # Get the user
-        member = discord.utils.get(guild.members, name=username, 
-                                 discriminator=digits)
+        member = discord.utils.get(guild.members, name=username,
+                                   discriminator=digits)
 
         # Check if the user does not exist
         if member is None:
@@ -90,14 +90,14 @@ class MuteMember(commands.Cog):
         for role in user.roles:
             if 'Muted' == role.name:
                 isMuted = True
-        
+
         # Add or remove role depending on if the Member has the role
         if isMuted:
-            await member.remove_roles(discord.utils.get(guild.roles, 
-                                                      name='Muted'))
+            await member.remove_roles(discord.utils.get(guild.roles,
+                                                        name='Muted'))
             await ctx.channel.send('Unmuted Member.')
         else:
-            await member.add_roles(discord.utils.get(guild.roles, 
+            await member.add_roles(discord.utils.get(guild.roles,
                                                      name='Muted'))
             await ctx.channel.send('Muted Member.')
         self.bot.processes['m_toggle_member_muted'] = None
@@ -120,7 +120,7 @@ class MuteMember(commands.Cog):
         for member in guild.members:
             if muted_role in member.roles:
                 ret += member.name + '#' + member.discriminator + '\n'
-        
+
         # Output Muted members
         if ret:
             await ctx.send(ret)
@@ -145,10 +145,10 @@ class MuteMember(commands.Cog):
         for channel in guild.text_channels:
             await channel.set_permissions(muted_role, send_messages=False,
                                           add_reactions=False)
-        
+
         # Loop through every voice channel and set permissions for Muted role
         for channel in guild.voice_channels:
             await channel.set_permissions(muted_role, connect=False,
                                           speak=False, stream=False)
-        
+
         await ctx.send('Setup complete.')
