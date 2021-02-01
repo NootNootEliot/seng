@@ -75,14 +75,14 @@ class MuteMember(commands.Cog):
         # Get the guild
         guild = self.get_guild()
         # Get the user
-        user = discord.utils.get(guild.members, name=username, 
+        member = discord.utils.get(guild.members, name=username, 
                                  discriminator=digits)
 
         # Check if the user does not exist
-        if user is None:
+        if member is None:
             await ctx.channel.send(
-                'Could not find that user. Ensure that you have entered their '
-                'username and discriminator correctly.\nCancelling'
+                'Could not find that Member. Ensure that you have entered '
+                'their username and discriminator correctly.\nCancelling'
             )
 
         # Check if the user is already Muted or not
@@ -93,12 +93,13 @@ class MuteMember(commands.Cog):
         
         # Add or remove role depending on if the Member has the role
         if isMuted:
-            await user.remove_roles(discord.utils.get(guild.roles, 
+            await member.remove_roles(discord.utils.get(guild.roles, 
                                                       name='Muted'))
-            await ctx.channel.send('Unmuted user.')
+            await ctx.channel.send('Unmuted Member.')
         else:
-            await user.add_roles(discord.utils.get(guild.roles, name='Muted'))
-            await ctx.channel.send('Muted user.')
+            await member.add_roles(discord.utils.get(guild.roles, 
+                                                     name='Muted'))
+            await ctx.channel.send('Muted Member.')
         self.bot.processes['m_toggle_member_muted'] = None
 
     @commands.command()
