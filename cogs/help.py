@@ -37,7 +37,7 @@ class GetHelp(commands.Cog):
             '`m_toggle_member_muted` - Toggles the \'Muted\' role on a '
             'Member\n'
             '`m_view_muted_members` - View all Members with the \'Muted\' '
-            'role.'
+            'role.\n'
             '`m_mute_perm_setup` - Sets up the mute permission setting on '
             'every channel in the guild.'
         )
