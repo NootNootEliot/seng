@@ -12,6 +12,13 @@ class MuteMember(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    def get_guild(self):
+        """Returns the guild object"""
+        with open('./server_specific/channel_ids.json', 'r') as id_file:
+            channel_id_dict = json.loads(id_file.read())
+        guild_id = channel_id_dict['GUILD']
+        return self.bot.get_guild(guild_id)
+
     async def get_uname_digits(self, ctx, message):
         """Returns tuple of username and four digits from string
 
@@ -27,10 +34,9 @@ class MuteMember(commands.Cog):
         if (l_index == -1) or (r_index == -1) or (l_index == r_index):
             await ctx.channel.send('Format looks incorrect. Please wrap the '
                                    'username and four digits in backticks '
-                                   '(`).')
-            await ctx.channel.send('Cancelling.')
+                                   '(`).\nCancelling')
             self.bot.processes['m_mute_member'] = None
-            return (None, None)
+            return (None, None)  # Gives something to unpack
         
         # Get username and the discriminator
         username_four_digits = message.content[l_index+1:r_index]
@@ -38,31 +44,25 @@ class MuteMember(commands.Cog):
     
     async def get_user(self, ctx, username, digits):
         """Returns a user object, given a username and their discriminator"""
-        # Get guild
-        with open('./server_specific/channel_ids.json', 'r') as id_file:
-            channel_id_dict = json.loads(id_file.read())
-        guild_id = channel_id_dict['GUILD']
-        guild = self.bot.get_guild(guild_id)
-
         # Get user
-        user = discord.utils.get(guild.members, name=username, 
+        user = discord.utils.get(self.get_guild().members, name=username, 
                                  discriminator=digits)
 
         # Check if the user does not exist
         if user is None:
             await ctx.channel.send('Could not find that user. Ensure that you '
                                    'have entered their username and '
-                                   'discriminator correctly.')
-            await ctx.channel.send('Cancelling.')
+                                   'discriminator correctly.\nCancelling')
 
         return user
 
     async def change_member_muted(self, ctx, user, isAdding):
-        # Get guild
-        with open('./server_specific/channel_ids.json', 'r') as id_file:
-            channel_id_dict = json.loads(id_file.read())
-        guild_id = channel_id_dict['GUILD']
-        guild = self.bot.get_guild(guild_id)
+        """Adds or removes the Muted role from a user
+        
+        isAdding  -- True for adding the Muted role. False for removing it
+        user      -- User object to add/remove the role to/from
+        """
+        guild = self.get_guild()
 
         # Add or remove the role
         if isAdding:
@@ -76,7 +76,7 @@ class MuteMember(commands.Cog):
             self.bot.processes['m_unmute_member'] = None
 
     async def get_username_four_digits_msg(self, ctx):
-        # The check for messages in Seng conversation
+        """Returns message obj that should contain the username and discrim"""
         def check(m):
             return (
                 asyncless_is_mod_commands_channel(m) and
@@ -177,11 +177,7 @@ class MuteMember(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
 
-        # Get the guild
-        with open('./server_specific/channel_ids.json', 'r') as id_file:
-            channel_id_dict = json.loads(id_file.read())
-        guild_id = channel_id_dict['GUILD']
-        guild = self.bot.get_guild(guild_id)    
+        guild = self.get_guild()
 
         # Get the 'Muted' role
         muted_role = discord.utils.get(guild.roles, name='Muted')
