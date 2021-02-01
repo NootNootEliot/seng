@@ -1,4 +1,6 @@
 from discord.ext import commands
+from .validation import is_moderator, is_mod_commands_channel
+import json
 
 
 class MuteMember(commands.Cog):
@@ -22,5 +24,19 @@ class MuteMember(commands.Cog):
         pass
 
     @commands.command()
-    async def mute_perm_setup():
+    async def mute_perm_setup(self, ctx):
         """Sets up the mute permission setting on every channel in the guild"""
+        # Validation
+        if not await is_moderator(ctx):
+            return
+        if not await is_mod_commands_channel(ctx):
+            return
+
+        # Get the guild
+        with open('./server_specific/channel_ids.json', 'r') as id_file:
+            channel_id_dict = json.loads(id_file.read())
+        guild_id = channel_id_dict['GUILD']
+        guild = self.bot.get_guild(guild_id)    
+
+        for channel in guild.text_channels:
+            print(channel)
