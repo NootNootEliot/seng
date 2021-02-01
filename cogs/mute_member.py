@@ -103,8 +103,28 @@ class MuteMember(commands.Cog):
 
     @commands.command()
     async def m_view_muted_members(self, ctx):
-        """Outputs a list of all Members who are muted"""
-        pass
+        """Outputs a list of all Members who have the Muted role"""
+        # Validation
+        if not await is_moderator(ctx):
+            return
+        if not await is_mod_commands_channel(ctx):
+            return
+
+        # Get the guild and role
+        guild = self.get_guild()
+        muted_role = discord.utils.get(guild.roles, name='Muted')
+
+        # Construct string of all muted Members
+        ret = ''
+        for member in guild.members:
+            if muted_role in member.roles:
+                ret += member.name + '#' + member.discriminator + '\n'
+        
+        # Output Muted members
+        if ret:
+            await ctx.send(ret)
+        else:
+            await ctx.send('No Members are currently muted!')
 
     @commands.command()
     async def m_mute_perm_setup(self, ctx):
