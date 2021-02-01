@@ -25,13 +25,21 @@ class GetHelp(commands.Cog):
 
         help_string = (
             'These are the commands available to moderators. All commands'
-            'are prefixed with `$`.\n'
+            'are prefixed with `$`. If no parameters are shown after the '
+            'command in this help message, then you can presume you can enter '
+            'the command itself.\n'
             '`m_list_moderators` - List people with Seng moderator '
             'permissions.\n'
             '`m_help_welcome_blocks` - List information for using the welcome '
             'block.\n'
             '`m_help_stats` - List help information for using the `m_stats`'
             'functionality.\n'
+            '`m_toggle_member_muted` - Toggles the \'Muted\' role on a 
+            'Member\n'
+            '`m_view_muted_members` - View all Members with the \'Muted\' '
+            'role.'
+            '`m_mute_perm_setup` - Sets up the mute permission setting on '
+            'every channel in the guild.'
         )
         await ctx.send(help_string)
 
