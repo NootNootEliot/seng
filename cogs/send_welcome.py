@@ -275,6 +275,20 @@ class Welcome(commands.Cog):
         self.bot.processes['m_preview_wb'] = None
 
     @commands.command()
+    async def m_clear_wb_queue(self, ctx):
+        """Clears the welcome block queue"""
+        # Validation
+        if not await is_moderator(ctx):
+            return
+        if not await is_mod_commands_channel(ctx):
+            return
+        
+        # Open the file and close it to erase it
+        block_queue_path = 'server_specific/welcome_blocks/_block_queue'
+        open(block_queue_path, 'w').close()
+        await ctx.send('Cleared welcome block queue.')
+
+    @commands.command()
     async def m_view_wb_queue(self, ctx):
         """Print the current Welcome Block queue"""
         # Validation
