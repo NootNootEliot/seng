@@ -40,6 +40,7 @@ class Welcome(commands.Cog):
     @commands.command()
     async def m_list_wb(self, ctx):
         """Lists all Welcome Blocks that Seng has in storage"""
+        # Validation
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
@@ -56,6 +57,7 @@ class Welcome(commands.Cog):
     @commands.command()
     async def m_make_wb(self, ctx):
         """Process for a user creating a Welcome Block"""
+        # Validation
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
@@ -226,7 +228,7 @@ class Welcome(commands.Cog):
     @commands.command()
     async def m_preview_wb(self, ctx):
         """User requests a Welcome Block to view"""
-        #Validation
+        # Validation
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
