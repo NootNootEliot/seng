@@ -9,22 +9,22 @@ class MuteMember(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def mute_member():
+    async def m_mute_member(self, ctx):
         """Mutes a Member"""
         pass
 
     @commands.command()
-    async def unmute_member():
+    async def m_unmute_member(self, ctx):
         """Unmutes a Member"""
         pass
 
     @commands.command()
-    async def view_muted_members():
+    async def m_view_muted_members(self, ctx):
         """Outputs a list of all Members who are muted"""
         pass
 
     @commands.command()
-    async def mute_perm_setup(self, ctx):
+    async def m_mute_perm_setup(self, ctx):
         """Sets up the mute permission setting on every channel in the guild"""
         # Validation
         if not await is_moderator(ctx):
