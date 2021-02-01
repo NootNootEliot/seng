@@ -1,6 +1,7 @@
 from discord.ext import commands
 from .validation import is_moderator, is_mod_commands_channel
 import json
+import discord
 
 
 class MuteMember(commands.Cog):
@@ -38,5 +39,17 @@ class MuteMember(commands.Cog):
         guild_id = channel_id_dict['GUILD']
         guild = self.bot.get_guild(guild_id)    
 
+        # Get the 'Muted' role
+        muted_role = discord.utils.get(guild.roles, name='Muted')
+
+        # Loop through every text channel and set permissions for Muted role
         for channel in guild.text_channels:
-            print(channel)
+            await channel.set_permissions(muted_role, send_messages=False,
+                                          add_reactions=False)
+        
+        # Loop through every voice channel and set permissions for Muted role
+        for channel in guild.voice_channels:
+            await channel.set_permissions(muted_role, connect=False,
+                                          speak=False, video=False)
+        
+        await ctx.send('Setup complete.')
