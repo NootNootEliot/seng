@@ -182,6 +182,7 @@ class Welcome(commands.Cog):
     @commands.command()
     async def m_remove_wb(self, ctx):
         """Command for removing a welcome block from storage"""
+        # Validation
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
@@ -202,6 +203,7 @@ class Welcome(commands.Cog):
                 not m.content.startswith('$m')
             )
 
+        # Get name of the block to delete
         await ctx.send('Please enter the name of the welcome block you would '
                        'like to delete from **storage**. Alternatively, write '
                        '\'cancel\' to cancel.')
@@ -209,6 +211,7 @@ class Welcome(commands.Cog):
         if await self.is_wanting_cancel(del_block_msg, 'm_remove_wb'):
             return
 
+        # Try removing that block from storage
         try:
             os.remove(os.path.join('server_specific/welcome_blocks',
                                    del_block_msg.content + '.json'))
@@ -223,6 +226,7 @@ class Welcome(commands.Cog):
     @commands.command()
     async def m_preview_wb(self, ctx):
         """User requests a Welcome Block to view"""
+        #Validation
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
@@ -243,6 +247,7 @@ class Welcome(commands.Cog):
                 not m.content.startswith('$m')
             )
 
+        # Ask for the name of the block to preview
         await ctx.send('What block would you like to search for to preview? '
                        'Alternatively, write \'cancel\' to cancel.')
         name_msg = await self.bot.wait_for('message', check=check)
@@ -255,6 +260,7 @@ class Welcome(commands.Cog):
                 name_msg.content + '.json'
         )
 
+        # Try opening the block file to send it
         try:
             with open(Path(block_path), 'r') as block_file:
                 data_dict = json.loads(block_file.read())
@@ -267,6 +273,7 @@ class Welcome(commands.Cog):
     @commands.command()
     async def m_view_wb_queue(self, ctx):
         """Print the current Welcome Block queue"""
+        # Validation
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
@@ -303,9 +310,9 @@ class Welcome(commands.Cog):
                 not m.content.startswith('$m')
             )
 
+        # Get the message containing the block to add
         await ctx.send('What block would you like to add to the queue? '
                        'Alternatively, write \'cancel\' to cancel.')
-
         add_block_msg = await self.bot.wait_for('message', check=check)
         if await self.is_wanting_cancel(add_block_msg, 'm_add_wb_to_queue'):
             return
@@ -321,6 +328,7 @@ class Welcome(commands.Cog):
             await ctx.send('I could not find that block! Cancelling.')
             self.bot.processes['m_add_wb_to_queue'] = None
 
+        # Append block to the end of the block queue file
         block_queue_path = 'server_specific/welcome_blocks/_block_queue'
         with open(Path(block_queue_path), 'a+') as block_queue_file:
             block_queue_file.write(add_block_msg.content + '\n')
@@ -331,6 +339,7 @@ class Welcome(commands.Cog):
     @commands.command()
     async def m_remove_wb_from_queue(self, ctx):
         """Remove a requested Welcome Block from queue"""
+        # Validation
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
@@ -352,17 +361,21 @@ class Welcome(commands.Cog):
                 not m.content.startswith('$m')
             )
 
+        # Get the message containing the block to remove
         await ctx.send('What block would you like to remove from the queue?')
         rem_block_msg = await self.bot.wait_for('message', check=check)
         if is_wanting_cancecl(rem_block_msg, 'm_remove_wb_from_queue'):
             return
 
+        # Read the file before erasing
         block_queue_path = 'server_specific/welcome_blocks/_block_queue'
         with open(Path(block_queue_path), 'r') as block_queue_file:
             blocks = block_queue_file.read().splitlines()
 
-        open(Path(block_queue_path), 'w').close()  # Erase entire file
+        # Erase the entire file
+        open(Path(block_queue_path), 'w').close()
 
+        # Write all blocks back to the file, except for the removed block
         with open(Path(block_queue_path), 'a') as block_queue_file:
             for block in blocks:
                 if block == rem_block_msg.content:
@@ -374,15 +387,18 @@ class Welcome(commands.Cog):
     @commands.command()
     async def m_see_draft_welcome_message(self, ctx):
         """Print the current Welcome Block queue in 'export' form"""
+        # Validation
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
             return
 
+        # Get the 'blocks' in queue
         block_queue_path = 'server_specific/welcome_blocks/_block_queue'
         with open(Path(block_queue_path), 'r') as block_queue_file:
             blocks = block_queue_file.read().splitlines()
 
+        # Open each block in the queue, and send it
         for block in blocks:
             block_path = os.path.join(
                 'server_specific/welcome_blocks',
@@ -396,6 +412,7 @@ class Welcome(commands.Cog):
     @commands.command()
     async def m_publish_welcome_message(self, ctx):
         """Send the Welcome Block queue into the welcome channel"""
+        # Validation
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
@@ -416,6 +433,7 @@ class Welcome(commands.Cog):
                 m.author.id == author_id and
                 not m.content.startswith('$m')
             )
+
         # Confirmation check
         await ctx.send('Are you sure that you want to publish the welcome '
                        'message? This will be posted publicly in the welcome '
