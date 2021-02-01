@@ -50,6 +50,6 @@ class MuteMember(commands.Cog):
         # Loop through every voice channel and set permissions for Muted role
         for channel in guild.voice_channels:
             await channel.set_permissions(muted_role, connect=False,
-                                          speak=False, video=False)
+                                          speak=False, stream=False)
         
         await ctx.send('Setup complete.')
