@@ -52,6 +52,8 @@ class Welcome(commands.Cog):
                 continue
             # Get just the name, and add a newline to separate the filenames
             send_string += welcome_block.replace('.json', '\n')
+        if not send_string:
+            send_string = 'No blocks currently in storage!'
         await ctx.send(send_string)
 
     @commands.command()
