@@ -258,7 +258,7 @@ class Welcome(commands.Cog):
             return
 
         # Make sure that the block wanting to be duplicated exists
-        does_block_exist = check_block_exists(duplicate_block_msg)
+        does_block_exist = self.check_block_exists(duplicate_block_msg)
         if not does_block_exist:
             await ctx.send('I could not find that block! Cancelling.')
             self.bot.processes['m_duplicate_wb'] = None
@@ -293,7 +293,7 @@ class Welcome(commands.Cog):
             return
 
         # Make sure that the block wanting to be duplicated exists
-        does_block_exist = check_block_exists(rename_block_msg)
+        does_block_exist = self.check_block_exists(rename_block_msg)
         if not does_block_exist:
             await ctx.send('I could not find that block! Cancelling.')
             self.bot.processes['m_rename_wb'] = None
@@ -343,7 +343,7 @@ class Welcome(commands.Cog):
             return
 
         # Make sure that the block wanting to be edited exists
-        does_block_exist = check_block_exists(edit_block_msg)
+        does_block_exist = self.check_block_exists(edit_block_msg)
         if not does_block_exist:
             await ctx.send('I could not find that block! Cancelling.')
             self.bot.processes['m_edit_wb'] = None
@@ -506,7 +506,7 @@ class Welcome(commands.Cog):
             return
 
         # Make sure that the block wanting to be added exists
-        does_block_exist = check_block_exists(add_block_msg)
+        does_block_exist = self.check_block_exists(add_block_msg)
         if not does_block_exist:
             await ctx.send('I could not find that block! Cancelling.')
             self.bot.processes['m_add_wb_to_queue'] = None
@@ -542,7 +542,7 @@ class Welcome(commands.Cog):
             return
 
         # Make sure that the block wanting to be inserted exists
-        does_block_exist = check_block_exists(insert_block_msg)
+        does_block_exist = self.check_block_exists(insert_block_msg)
         if not does_block_exist:
             await ctx.send('I could not find that block! Cancelling.')
             self.bot.processes['m_insert_wb_in_queue'] = None
