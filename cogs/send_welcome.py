@@ -254,7 +254,7 @@ class Welcome(commands.Cog):
 
         # Get the message containing the block to duplicate
         duplicate_block_msg = await self.get_block_name(ctx)
-        if await self.is_wanting_cancel(add_block_msg, 'm_duplicate_wb'):
+        if await self.is_wanting_cancel(duplicate_block_msg, 'm_duplicate_wb'):
             return
 
         # Make sure that the block wanting to be duplicated exists
@@ -289,7 +289,7 @@ class Welcome(commands.Cog):
 
         # Get the message containing the block to rename
         rename_block_msg = await self.get_block_name(ctx)
-        if await self.is_wanting_cancel(add_block_msg, 'm_rename_wb'):
+        if await self.is_wanting_cancel(rename_block_msg, 'm_rename_wb'):
             return
 
         # Make sure that the block wanting to be duplicated exists
@@ -339,7 +339,7 @@ class Welcome(commands.Cog):
 
         # Get the message containing the block to edit
         edit_block_msg = await self.get_block_name(ctx)
-        if await self.is_wanting_cancel(add_block_msg, 'm_edit_wb'):
+        if await self.is_wanting_cancel(edit_block_msg, 'm_edit_wb'):
             return
 
         # Make sure that the block wanting to be edited exists
@@ -537,7 +537,8 @@ class Welcome(commands.Cog):
 
         # Get the message containing the block to insert
         insert_block_msg = await self.get_block_name(ctx)
-        if await self.is_wanting_cancel(add_block_msg, 'm_insert_wb_in_queue'):
+        if await self.is_wanting_cancel(insert_block_msg, 
+                                        'm_insert_wb_in_queue'):
             return
 
         # Make sure that the block wanting to be inserted exists
