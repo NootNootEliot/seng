@@ -22,6 +22,30 @@ class Welcome(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    async def get_block_name(self):
+    """Return the message containing the block name to do something with"""
+        def check(m):
+            return (
+                asyncless_is_mod_commands_channel(m) and
+                m.author.id == author_id and
+                not m.content.startswith('$m')
+            )
+
+        # Get the message containing the block to add
+        await ctx.send('What is the name of the block? Alternatively, write'
+                       '\'cancel\' to cancel.')
+        return await self.bot.wait_for('message', check=check)
+    
+    def check_block_exists(self, block_message):
+        """Checks if a given block is in storage"""
+        does_block_exist = False
+        for welcome_block in os.listdir('server_specific/welcome_blocks'):
+            if welcome_block.startswith('_'):  # Ignore _block_queue
+                continue
+            if add_block_msg.content == welcome_block.replace('.json', ''):
+                does_block_exist = True
+        return does_block_exist
+
     async def send_block(self, data_dict, channel):
         """Send requested block in the requested channel"""
         if data_dict['type'] == 'text':
@@ -74,7 +98,6 @@ class Welcome(commands.Cog):
 
         def check(m):
             return (
-                asyncless_is_moderator(m) and  # Possibly redundant
                 asyncless_is_mod_commands_channel(m) and
                 m.author.id == author_id and
                 not m.content.startswith('$m')
@@ -201,7 +224,6 @@ class Welcome(commands.Cog):
 
         def check(m):
             return (
-                asyncless_is_moderator(m) and  # Possibly redundant
                 asyncless_is_mod_commands_channel(m) and
                 m.author.id == author_id and
                 not m.content.startswith('$m')
@@ -245,7 +267,6 @@ class Welcome(commands.Cog):
         # The check used for correspondance with the user
         def check(m):
             return (
-                asyncless_is_moderator(m) and  # Possibly redundant
                 asyncless_is_mod_commands_channel(m) and
                 m.author.id == author_id and
                 not m.content.startswith('$m')
@@ -307,7 +328,8 @@ class Welcome(commands.Cog):
 
     @commands.command()
     async def m_add_wb_to_queue(self, ctx):
-        """Add requested Welcome Block to the queue"""
+        """Adds requested Welcome Block to the end of the queue"""
+        # Validation
         if not await is_moderator(ctx):
             return
         if not await is_mod_commands_channel(ctx):
@@ -320,31 +342,17 @@ class Welcome(commands.Cog):
         # Add user to the process
         self.bot.processes['m_add_wb_to_queue'] = author_id
 
-        def check(m):
-            return (
-                asyncless_is_moderator(m) and  # Possibly redundant
-                asyncless_is_mod_commands_channel(m) and
-                m.author.id == author_id and
-                not m.content.startswith('$m')
-            )
-
         # Get the message containing the block to add
-        await ctx.send('What block would you like to add to the queue? '
-                       'Alternatively, write \'cancel\' to cancel.')
-        add_block_msg = await self.bot.wait_for('message', check=check)
+        add_block_msg = await self.get_block_name(ctx)
         if await self.is_wanting_cancel(add_block_msg, 'm_add_wb_to_queue'):
             return
 
-        # Make sure that block added actually exists
-        does_block_exist = False
-        for welcome_block in os.listdir('server_specific/welcome_blocks'):
-            if welcome_block.startswith('_'):  # Ignore _block_queue
-                continue
-            if add_block_msg.content == welcome_block.replace('.json', ''):
-                does_block_exist = True
+        # Make sure that the block wanting to be added exists
+        does_block_exist = check_block_exists(add_block_msg)
         if not does_block_exist:
             await ctx.send('I could not find that block! Cancelling.')
             self.bot.processes['m_add_wb_to_queue'] = None
+            return
 
         # Append block to the end of the block queue file
         block_queue_path = 'server_specific/welcome_blocks/_block_queue'
@@ -355,6 +363,92 @@ class Welcome(commands.Cog):
         self.bot.processes['m_add_wb_to_queue'] = None
 
     @commands.command()
+    async def m_insert_wb_in_queue(self, ctx):
+        """Inserts a welcome block at a position in the queue"""
+        # Validation
+        if not await is_moderator(ctx):
+            return
+        if not await is_mod_commands_channel(ctx):
+            return
+        if not await is_process_and_user_clear(self.bot, 'm_add_wb_to_queue',
+                                               ctx.author.id):
+            return
+
+        # Add user to the process
+        self.bot.processes['m_insert_wb_in_queue'] = ctx.author.id
+
+        # Get the message containing the block to insert
+        insert_block_msg = await self.get_block_name(ctx)
+        if await self.is_wanting_cancel(add_block_msg, 'm_insert_wb_in_queue'):
+            return
+        
+        # Make sure that the block wanting to be inserted exists
+        does_block_exist = check_block_exists(insert_block_msg)
+        if not does_block_exist:
+            await ctx.send('I could not find that block! Cancelling.')
+            self.bot.processes['m_insert_wb_in_queue'] = None
+            return
+        
+        # Position to insert
+        def check(m):
+            return (
+                asyncless_is_mod_commands_channel(m) and
+                m.author.id == author_id and
+                not m.content.startswith('$m')
+            )
+        
+        # Get the message containing the insert position
+        await ctx.send(
+            'At what position should I insert this block into the queue? '
+            'Please enter an integer number, which will be the **position** '
+            'of the block in the queue, where the starting position is 1. '
+            'Alternatively, write \'cancel\' to cancel.'
+        )
+        insert_position_msg = await self.bot.wait_for('message', check=check)
+        if await self.is_wanting_cancel(insert_position_msg,
+                                        'm_insert_wb_in_queue'):
+            return
+        
+        pos = insert_position_msg.content
+        # Check that the insert position is a digit
+        if not pos.isdigit():
+            await ctx.send(
+                'Please send an integer number.\nCancelling.'
+                self.bot.processes['m_insert_wb_in_queue'] = None
+                return
+            )
+        
+        # Get length of welcome block queue for bound checking
+        block_queue_path = 'server_specific/welcome_blocks/_block_queue'
+        with open(Path(block_queue_path), 'r') as block_queue_file:
+            blocks = block_queue_file.read().splitlines()
+            length = len(blocks)
+
+        # Check that the integer is within the correct bounds
+        if (int(pos.content) < 1) or (int(pos.content) > length + 1)
+             await ctx.send(
+                'Please enter an integer number between 1 and the length of '
+                'the welcome block queue (plus one).\nCancelling.'
+                self.bot.processes['m_insert_wb_in_queue'] = None
+                return
+            )
+        
+        # Insert block
+        # Erase the entire queue file
+        open(block_queue_path, 'w').close()
+
+        # Rewrite the queue, inserting the block
+        with open(block_queue_path, 'a') as block_queue_file:
+            for counter, block in enumerate(blocks):
+                # Check to insert the block
+                if counter + 1 == int(pos.content):
+                    block_queue_file.write(insert_block_msg.content + '\n')
+                block_queue_file.write(block + '\n')
+        await ctx.send('Block inserted.')
+        self.bot.processes['m_insert_wb_in_queue'] = None
+
+
+    @commands.command()
     async def m_remove_wb_from_queue(self, ctx):
         """Remove a requested Welcome Block from queue"""
         # Validation
@@ -362,26 +456,15 @@ class Welcome(commands.Cog):
             return
         if not await is_mod_commands_channel(ctx):
             return
-
-        author_id = ctx.author.id
         if not await is_process_and_user_clear(self.bot,
                                                'm_remove_wb_from_queue',
-                                               author_id):
+                                               ctx.author.id):
             return
         # Add user to the process
-        self.bot.processes['m_remove_wb_from_queue'] = author_id
-
-        def check(m):
-            return (
-                asyncless_is_moderator(m) and  # Possibly redundant
-                asyncless_is_mod_commands_channel(m) and
-                m.author.id == author_id and
-                not m.content.startswith('$m')
-            )
+        self.bot.processes['m_remove_wb_from_queue'] = ctx.author.id
 
         # Get the message containing the block to remove
-        await ctx.send('What block would you like to remove from the queue?')
-        rem_block_msg = await self.bot.wait_for('message', check=check)
+        rem_block_msg = await self.get_block_name(ctx)
         if is_wanting_cancecl(rem_block_msg, 'm_remove_wb_from_queue'):
             return
 
@@ -390,8 +473,8 @@ class Welcome(commands.Cog):
         with open(Path(block_queue_path), 'r') as block_queue_file:
             blocks = block_queue_file.read().splitlines()
 
-        # Erase the entire file
-        open(Path(block_queue_path), 'w').close()
+        # Erase the entire queue file
+        open(block_queue_path, 'w').close()
 
         # Write all blocks back to the file, except for the removed block
         with open(Path(block_queue_path), 'a') as block_queue_file:
@@ -446,7 +529,6 @@ class Welcome(commands.Cog):
 
         def check(m):
             return (
-                asyncless_is_moderator(m) and  # Possibly redundant
                 asyncless_is_mod_commands_channel(m) and
                 m.author.id == author_id and
                 not m.content.startswith('$m')
