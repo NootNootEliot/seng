@@ -7,6 +7,7 @@ from .validation import (is_moderator, is_mod_commands_channel,
 import json
 import os
 import discord
+import shutil
 
 
 class Welcome(commands.Cog):
@@ -248,6 +249,41 @@ class Welcome(commands.Cog):
 
         await ctx.send('Deleted that welcome block.')
         self.bot.processes['m_remove_wb'] = None
+
+    @commands.command()
+    async def m_duplicate_wb(self, ctx):
+        if not await is_moderator(ctx):
+            return
+        if not await is_mod_commands_channel(ctx):
+            return
+        if not await is_process_and_user_clear(self.bot, 'm_edit_wb',
+                                               ctx.author.id):
+            return
+        # Add user to the process
+        self.bot.processes['m_duplicate_wb'] = ctx.author.id
+
+        # Get the message containing the block to duplicate
+        duplicate_block_msg = await self.get_block_name(ctx)
+        if await self.is_wanting_cancel(add_block_msg, 'm_duplicate_wb'):
+            return
+
+        # Make sure that the block wanting to be duplicated exists
+        does_block_exist = check_block_exists(duplicate_block_msg)
+        if not does_block_exist:
+            await ctx.send('I could not find that block! Cancelling.')
+            self.bot.processes['m_duplicate_wb'] = None
+            return
+        
+        # Duplicate the welcome block
+        block_src = duplicate_block_msg.content
+        block_dst = duplicate_block_msg.content + '_copy'
+        await ctx.send('Copying {} to {}.'.format(block-src, block_dst))
+
+        block_src = os.path.join('server_specific/welcome_blocks', block_src)
+        block_dst = os.path.join('server_specific/welcome_blocks', block_dst)
+        shutil.copyfile(block_src, block_dst)
+        await ctx.send('Copied file.')
+        self.bot.processes['m_duplicate_wb'] = None
 
     @commands.command()
     async def m_edit_wb(self, ctx):

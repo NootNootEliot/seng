@@ -54,6 +54,8 @@ class GetHelp(commands.Cog):
             'Seng to delete a welcome block.\n'
             '`m_edit_wb` - Begin the walkthrough process of editing a welcome '
             'block.\n'
+            '`m_duplicate_wb` - Begin the walkthrough process of duplicating '
+            'a welcome block in storage.'
             '`m_preview_wb` - Begin the walkthrough process of previewing '
             'a single welcome block. Lets you see what it will look like!\n'
             '`m_view_wb_queue` - List the names of all welcome blocks that '
