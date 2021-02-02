@@ -479,10 +479,12 @@ class Welcome(commands.Cog):
         block_queue_path = 'server_specific/welcome_blocks/_block_queue'
         with open(Path(block_queue_path), 'r') as block_queue_file:
             blocks = block_queue_file.readlines()
-            if not blocks:
-                await ctx.send('No blocks in queue!')
+            ret = ''
             for block in blocks:
-                await ctx.send(block)
+                ret += block
+            if not ret:
+                ret = 'No welcome blocks in queue!'
+            await ctx.send(ret)
 
     @commands.command()
     async def m_add_wb_to_queue(self, ctx):
