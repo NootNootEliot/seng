@@ -622,7 +622,8 @@ class Welcome(commands.Cog):
 
         # Get the message containing the block to remove
         rem_block_msg = await self.get_block_name(ctx)
-        if self.is_wanting_cancel(rem_block_msg, 'm_remove_wb_from_queue'):
+        if await self.is_wanting_cancel(rem_block_msg, 
+                                        'm_remove_wb_from_queue'):
             return
 
         # Read the file before erasing
