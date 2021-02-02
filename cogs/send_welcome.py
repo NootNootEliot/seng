@@ -250,6 +250,91 @@ class Welcome(commands.Cog):
         self.bot.processes['m_remove_wb'] = None
 
     @commands.command()
+    async def m_edit_wb(self, ctx):
+        """Edits a welcome block"""
+        # Validation
+        if not await is_moderator(ctx):
+            return
+        if not await is_mod_commands_channel(ctx):
+            return
+        if not await is_process_and_user_clear(self.bot, 'm_edit_wb',
+                                               ctx.author.id):
+            return
+        # Add user to the process
+        self.bot.processes['m_edit_wb'] = ctx.author.id
+
+        # Get the message containing the block to edit
+        edit_block_msg = await self.get_block_name(ctx)
+        if await self.is_wanting_cancel(add_block_msg, 'm_edit_wb'):
+            return
+        
+        # Make sure that the block wanting to be edited exists
+        does_block_exist = check_block_exists(edit_block_msg)
+        if not does_block_exist:
+            await ctx.send('I could not find that block! Cancelling.')
+            self.bot.processes['m_edit_wb'] = None
+            return
+        
+        # Load the welcome block as a dictionary file
+        with open(edit_block_msg.content + '.json', 'r') as edit_block_file:
+            block_dict = json.loads(edit_block_file.read())
+        
+        # Edit loop
+        while True:
+            # Output available keys
+            available_keys = 'Available information to edit is: '
+            for key in block_dict:
+                available_keys += key + ', '
+            available_keys += (
+                '\nPlease enter a key name to edit its field. Or enter
+                '\'cancel\' to cancel, or \'done\' to save. If you want to '
+                'edit an embed, select \'embed_dict\' as the key. Then, copy '
+                'and paste the existing value, and make your changes.'
+            )
+            await ctx.send(available_keys)
+
+            def check(m):
+                return (
+                    asyncless_is_mod_commands_channel(m) and
+                    m.author.id == author_id and
+                    not m.content.startswith('$m')
+                )
+            # Get the message containing the key to edit
+            key_message = await self.bot.wait_for('message', check=check)
+            if await self.is_wanting_cancel(key_message, 'm_edit_wb'):
+                return
+            if key_message.content == 'done':
+                # Write the new dictionary to the block file
+                with open(edit_block_msgn.content + '.json', 'w') as e_b_file:
+                    e_b_file.write(json.dumps(block_dict))
+                await ctx.send('Saved your changes.')
+                self.bot.processes['m_edit_wb'] = None
+
+            # Check that the key is actually in the available keys
+            if key_message.content not in block_dict.keys():
+                await ctx.send('I do not recognise that key. Please enter one '
+                               'of the available keys listed above.')
+                continue
+            if key_message.content == 'title':
+                await ctx.send('Please do not change the title of the block, '
+                               'as this may interfere with functionality.')
+                continue
+            
+            # Ask for the new requested value
+            await ctx.send(
+                'Please enter the new value that you would like to replace '
+                'the existing one with. The existing value '
+                'is: {}'.format(block_dict[key_message.content])
+            )
+            replace_message = await self.bot.wait_for('message', check=check)
+            if await self.is_wanting_cancel(replace_message, 'm_edit_wb'):
+                return
+            
+            # Replace the existing value with the new one.
+            block_dict[key_message.content] = replace_message.content
+            await ctx.send('Replaced existing value.')
+
+    @commands.command()
     async def m_preview_wb(self, ctx):
         """User requests a Welcome Block to view"""
         # Validation
@@ -334,13 +419,11 @@ class Welcome(commands.Cog):
             return
         if not await is_mod_commands_channel(ctx):
             return
-
-        author_id = ctx.author.id
         if not await is_process_and_user_clear(self.bot, 'm_add_wb_to_queue',
-                                               author_id):
+                                               ctx.author.id):
             return
         # Add user to the process
-        self.bot.processes['m_add_wb_to_queue'] = author_id
+        self.bot.processes['m_add_wb_to_queue'] = ctx.author.id
 
         # Get the message containing the block to add
         add_block_msg = await self.get_block_name(ctx)
@@ -446,7 +529,6 @@ class Welcome(commands.Cog):
                 block_queue_file.write(block + '\n')
         await ctx.send('Block inserted.')
         self.bot.processes['m_insert_wb_in_queue'] = None
-
 
     @commands.command()
     async def m_remove_wb_from_queue(self, ctx):
