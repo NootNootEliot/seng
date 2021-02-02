@@ -24,7 +24,7 @@ class Welcome(commands.Cog):
         self.bot = bot
 
     async def get_block_name(self):
-    """Return the message containing the block name to do something with"""
+        """Return the message containing the block name to do something with"""
         def check(m):
             return (
                 asyncless_is_mod_commands_channel(m) and
@@ -36,7 +36,7 @@ class Welcome(commands.Cog):
         await ctx.send('What is the name of the block? Alternatively, write'
                        '\'cancel\' to cancel.')
         return await self.bot.wait_for('message', check=check)
-    
+
     def check_block_exists(self, block_message):
         """Checks if a given block is in storage"""
         does_block_exist = False
@@ -104,6 +104,7 @@ class Welcome(commands.Cog):
                 not m.content.startswith('$m')
             )
 
+        # Get the message containing the name of the welcome block
         await ctx.send('You may write \'cancel\' at any time during this '
                        'proceses to cancel it.\nPlease enter a name to '
                        'reference the block: (Note that entering the name of '
@@ -111,6 +112,8 @@ class Welcome(commands.Cog):
         name_msg = await self.bot.wait_for('message', check=check)
         if await self.is_wanting_cancel(name_msg, 'm_make_wb'):
             return
+
+        # Get the type of the welcome block
         while True:
             await ctx.send('Is this block a text type (normal text characters,'
                            ' including media links), or an embed type (the '
@@ -197,14 +200,13 @@ class Welcome(commands.Cog):
             embed_dict['type'] = 'rich'
             data_dict['embed_dict'] = embed_dict
 
+        # Write the block to its file
         block_path = os.path.join('server_specific/welcome_blocks',
                                   name_msg.content + '.json')
         with open(Path(block_path), 'w+') as block_file:
             block_file.write(json.dumps(data_dict))
 
         await ctx.send('Block formation process completed. Thank you!')
-
-        # Free user from process and free process from user
         self.bot.processes['m_make_wb'] = None
 
     @commands.command()
@@ -223,18 +225,8 @@ class Welcome(commands.Cog):
         # Add user to the process
         self.bot.processes['m_remove_wb'] = author_id
 
-        def check(m):
-            return (
-                asyncless_is_mod_commands_channel(m) and
-                m.author.id == author_id and
-                not m.content.startswith('$m')
-            )
-
-        # Get name of the block to delete
-        await ctx.send('Please enter the name of the welcome block you would '
-                       'like to delete from **storage**. Alternatively, write '
-                       '\'cancel\' to cancel.')
-        del_block_msg = await self.bot.wait_for('message', check=check)
+        # Get the message containing the block name to delete
+        del_block_msg = await self.get_block_name()
         if await self.is_wanting_cancel(del_block_msg, 'm_remove_wb'):
             return
 
@@ -273,7 +265,7 @@ class Welcome(commands.Cog):
             await ctx.send('I could not find that block! Cancelling.')
             self.bot.processes['m_duplicate_wb'] = None
             return
-        
+
         # Duplicate the welcome block
         block_src = duplicate_block_msg.content
         block_dst = duplicate_block_msg.content + '_copy'
@@ -308,7 +300,7 @@ class Welcome(commands.Cog):
             await ctx.send('I could not find that block! Cancelling.')
             self.bot.processes['m_rename_wb'] = None
             return
-        
+
         # Ask for the new name
         def check(m):
             return (
@@ -321,8 +313,7 @@ class Welcome(commands.Cog):
         new_name_msg = await self.bot.wait_for('messsage', check=check)
         if await self.is_wanting_cancel(new_name_msg, 'm_rename_wb'):
             return
-        
-        
+
         # Duplicate the welcome block
         block_src = rename_block_msg.content
         block_dst = new_name_msg.content
@@ -352,18 +343,18 @@ class Welcome(commands.Cog):
         edit_block_msg = await self.get_block_name(ctx)
         if await self.is_wanting_cancel(add_block_msg, 'm_edit_wb'):
             return
-        
+
         # Make sure that the block wanting to be edited exists
         does_block_exist = check_block_exists(edit_block_msg)
         if not does_block_exist:
             await ctx.send('I could not find that block! Cancelling.')
             self.bot.processes['m_edit_wb'] = None
             return
-        
+
         # Load the welcome block as a dictionary file
         with open(edit_block_msg.content + '.json', 'r') as edit_block_file:
             block_dict = json.loads(edit_block_file.read())
-        
+
         # Edit loop
         while True:
             # Output available keys
@@ -371,7 +362,7 @@ class Welcome(commands.Cog):
             for key in block_dict:
                 available_keys += key + ', '
             available_keys += (
-                '\nPlease enter a key name to edit its field. Or enter
+                '\nPlease enter a key name to edit its field. Or enter '
                 '\'cancel\' to cancel, or \'done\' to save. If you want to '
                 'edit an embed, select \'embed_dict\' as the key. Then, copy '
                 'and paste the existing value, and make your changes.'
@@ -384,6 +375,7 @@ class Welcome(commands.Cog):
                     m.author.id == author_id and
                     not m.content.startswith('$m')
                 )
+
             # Get the message containing the key to edit
             key_message = await self.bot.wait_for('message', check=check)
             if await self.is_wanting_cancel(key_message, 'm_edit_wb'):
@@ -404,7 +396,7 @@ class Welcome(commands.Cog):
                 await ctx.send('Please do not change the title of the block, '
                                'as this may interfere with functionality.')
                 continue
-            
+
             # Ask for the new requested value
             await ctx.send(
                 'Please enter the new value that you would like to replace '
@@ -414,7 +406,7 @@ class Welcome(commands.Cog):
             replace_message = await self.bot.wait_for('message', check=check)
             if await self.is_wanting_cancel(replace_message, 'm_edit_wb'):
                 return
-            
+
             # Replace the existing value with the new one.
             block_dict[key_message.content] = replace_message.content
             await ctx.send('Replaced existing value.')
@@ -427,18 +419,16 @@ class Welcome(commands.Cog):
             return
         if not await is_mod_commands_channel(ctx):
             return
-
-        author_id = ctx.author.id
         if not await is_process_and_user_clear(self.bot, 'm_preview_wb',
-                                               author_id):
+                                               ctx.author.id):
             return False
-        self.bot.processes['m_preview_wb'] = author_id
+        self.bot.processes['m_preview_wb'] = ctx.author.id
 
         # The check used for correspondance with the user
         def check(m):
             return (
                 asyncless_is_mod_commands_channel(m) and
-                m.author.id == author_id and
+                m.author.id == ctx.author.id and
                 not m.content.startswith('$m')
             )
 
@@ -473,7 +463,7 @@ class Welcome(commands.Cog):
             return
         if not await is_mod_commands_channel(ctx):
             return
-        
+
         # Open the file and close it to erase it
         block_queue_path = 'server_specific/welcome_blocks/_block_queue'
         open(block_queue_path, 'w').close()
@@ -549,14 +539,14 @@ class Welcome(commands.Cog):
         insert_block_msg = await self.get_block_name(ctx)
         if await self.is_wanting_cancel(add_block_msg, 'm_insert_wb_in_queue'):
             return
-        
+
         # Make sure that the block wanting to be inserted exists
         does_block_exist = check_block_exists(insert_block_msg)
         if not does_block_exist:
             await ctx.send('I could not find that block! Cancelling.')
             self.bot.processes['m_insert_wb_in_queue'] = None
             return
-        
+
         # Position to insert
         def check(m):
             return (
@@ -564,7 +554,7 @@ class Welcome(commands.Cog):
                 m.author.id == author_id and
                 not m.content.startswith('$m')
             )
-        
+
         # Get the message containing the insert position
         await ctx.send(
             'At what position should I insert this block into the queue? '
@@ -576,16 +566,16 @@ class Welcome(commands.Cog):
         if await self.is_wanting_cancel(insert_position_msg,
                                         'm_insert_wb_in_queue'):
             return
-        
+
         pos = insert_position_msg.content
         # Check that the insert position is a digit
         if not pos.isdigit():
             await ctx.send(
                 'Please send an integer number.\nCancelling.'
-                self.bot.processes['m_insert_wb_in_queue'] = None
-                return
             )
-        
+            self.bot.processes['m_insert_wb_in_queue'] = None
+            return
+
         # Get length of welcome block queue for bound checking
         block_queue_path = 'server_specific/welcome_blocks/_block_queue'
         with open(Path(block_queue_path), 'r') as block_queue_file:
@@ -593,14 +583,14 @@ class Welcome(commands.Cog):
             length = len(blocks)
 
         # Check that the integer is within the correct bounds
-        if (int(pos.content) < 1) or (int(pos.content) > length + 1)
-             await ctx.send(
+        if (int(pos.content) < 1) or (int(pos.content) > length + 1):
+            await ctx.send(
                 'Please enter an integer number between 1 and the length of '
                 'the welcome block queue (plus one).\nCancelling.'
-                self.bot.processes['m_insert_wb_in_queue'] = None
-                return
             )
-        
+            self.bot.processes['m_insert_wb_in_queue'] = None
+            return
+
         # Insert block
         # Erase the entire queue file
         open(block_queue_path, 'w').close()
@@ -685,23 +675,20 @@ class Welcome(commands.Cog):
             return
         if not await is_mod_commands_channel(ctx):
             return
-
-        author_id = ctx.author.id
         if not await is_process_and_user_clear(self.bot,
                                                'm_publish_welcome_message',
-                                               author_id):
+                                               ctx.author.id):
             return
-        # Add user to the process
-        self.bot.processes['m_publish_welcome_message'] = author_id
+        self.bot.processes['m_publish_welcome_message'] = ctx.author.id
 
         def check(m):
             return (
                 asyncless_is_mod_commands_channel(m) and
-                m.author.id == author_id and
+                m.author.id == ctx.author.id and
                 not m.content.startswith('$m')
             )
 
-        # Confirmation check
+        # Confirmation check that Moderator wants to publish
         await ctx.send('Are you sure that you want to publish the welcome '
                        'message? This will be posted publicly in the welcome '
                        'message channel. Please enter either \'yes\' or '
