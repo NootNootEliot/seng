@@ -310,17 +310,19 @@ class Welcome(commands.Cog):
             )
 
         await ctx.send('Please enter a new name for this block.')
-        new_name_msg = await self.bot.wait_for('messsage', check=check)
+        new_name_msg = await self.bot.wait_for('message', check=check)
         if await self.is_wanting_cancel(new_name_msg, 'm_rename_wb'):
             return
 
         # Duplicate the welcome block
         block_src = rename_block_msg.content
         block_dst = new_name_msg.content
-        await ctx.send('Renaming {} to {}.'.format(block-src, block_dst))
+        await ctx.send('Renaming {} to {}.'.format(block_src, block_dst))
 
-        block_src = os.path.join('server_specific/welcome_blocks', block_src)
-        block_dst = os.path.join('server_specific/welcome_blocks', block_dst)
+        block_src = os.path.join('server_specific/welcome_blocks', 
+                                 block_src + '.json')
+        block_dst = os.path.join('server_specific/welcome_blocks',
+                                 block_dst + '.json')
         os.replace(block_src, block_dst)
         await ctx.send('Renamed file.')
         self.bot.processes['m_rename_wb'] = None
