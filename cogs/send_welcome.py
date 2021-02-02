@@ -8,6 +8,7 @@ import json
 import os
 import discord
 import shutil
+import ast
 
 
 class Welcome(commands.Cog):
@@ -354,20 +355,27 @@ class Welcome(commands.Cog):
             return
 
         # Load the welcome block as a dictionary file
-        with open(edit_block_msg.content + '.json', 'r') as edit_block_file:
+        edit_block_path = os.path.join('server_specific/welcome_blocks',
+                                       edit_block_msg.content + '.json')
+        with open(edit_block_path, 'r') as edit_block_file:
             block_dict = json.loads(edit_block_file.read())
 
         # Edit loop
         while True:
             # Output available keys
-            available_keys = 'Available information to edit is: '
+            available_keys = 'Available information fields to edit is/are: '
             for key in block_dict:
-                available_keys += key + ', '
+                available_keys += f'\'{key}\'' + ', '
+            available_keys = available_keys.rstrip(', ')
+            available_keys += '.'
             available_keys += (
-                '\nPlease enter a key name to edit its field. Or enter '
-                '\'cancel\' to cancel, or \'done\' to save. If you want to '
-                'edit an embed, select \'embed_dict\' as the key. Then, copy '
-                'and paste the existing value, and make your changes.'
+                '\nPlease enter a field name above to edit its data. Or, '
+                'enter \'cancel\' to cancel, or \'done\' to save. If you want '
+                'to edit an embed, select \'embed_dict\' as the key. Then, '
+                'copy and paste the existing value, and make your changes. '
+                'Note that if you want to change the colour of the embed, '
+                'please get the hexadecimal representation of the colour, '
+                'and then convert it into base 10 form.'
             )
             await ctx.send(available_keys)
 
@@ -384,15 +392,16 @@ class Welcome(commands.Cog):
                 return
             if key_message.content == 'done':
                 # Write the new dictionary to the block file
-                with open(edit_block_msgn.content + '.json', 'w') as e_b_file:
+                with open(edit_block_path, 'w') as e_b_file:
                     e_b_file.write(json.dumps(block_dict))
                 await ctx.send('Saved your changes.')
                 self.bot.processes['m_edit_wb'] = None
+                return
 
             # Check that the key is actually in the available keys
             if key_message.content not in block_dict.keys():
                 await ctx.send('I do not recognise that key. Please enter one '
-                               'of the available keys listed above.')
+                               'of the available keys listed.')
                 continue
             if key_message.content == 'title':
                 await ctx.send('Please do not change the title of the block, '
@@ -410,7 +419,11 @@ class Welcome(commands.Cog):
                 return
 
             # Replace the existing value with the new one.
-            block_dict[key_message.content] = replace_message.content
+            new_content = replace_message.content
+            if key_message.content == 'embed_dict':
+                block_dict[key_message.content] = ast.literal_eval(new_content)
+            else:
+                block_dict[key_message.content] = new_content
             await ctx.send('Replaced existing value.')
 
     @commands.command()
