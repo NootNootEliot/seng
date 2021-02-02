@@ -688,7 +688,7 @@ class Welcome(commands.Cog):
                 with open(Path(block_path), 'r') as block_file:
                     data_dict = json.loads(block_file.read())
                     await self.send_block(data_dict, ctx)
-            except:
+            except FileNotFoundError:
                 await ctx.send(
                     'Warning: Could not find {}. Perhaps it has been '
                     'renamed?'.format(block))
@@ -755,8 +755,17 @@ class Welcome(commands.Cog):
                 'server_specific/welcome_blocks',
                 block + '.json'
             )
-            with open(Path(block_path), 'r') as block_file:
-                data_dict = json.loads(block_file.read())
-            await self.send_block(data_dict, welcome_channel)
-
+            try:
+                with open(Path(block_path), 'r') as block_file:
+                    data_dict = json.loads(block_file.read())
+                await self.send_block(data_dict, welcome_channel)
+            except FileNotFoundError:
+                await ctx.send(
+                    'Fatal Warning: Could not find {}. Perhaps it has been '
+                    'renamed? Error during welcome message publish. Some or '
+                    'none of the welcome messages may have been sent. Please '
+                    'check in the welcome channel.'.format(block)
+                )
+                self.bot.processes['m_publish_welcome_message'] = None
+                return
         self.bot.processes['m_publish_welcome_message'] = None
