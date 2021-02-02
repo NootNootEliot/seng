@@ -42,7 +42,7 @@ class GetHelp(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
 
-        help_string = (
+        help_string1 = (
             'Below are the commands for the welcome block functionality. Note '
             'that the \'walkthrough processes\' can be cancelled at any time '
             'by writing \'cancel\'.\n'
@@ -74,8 +74,9 @@ class GetHelp(commands.Cog):
             'what it will look like.\n'
             '`m_publish_welcome_message` - Seng will send the welcome '
             'messages, which correspond to those in the queue, to the '
-            'welcome channel.\n\n'
-            ''
+            'welcome channel.'
+        )
+        help_string2 = (
             'To send a welcome message, it is first desirable to build the '
             'message out of \'blocks\', where \'blocks\' are effectively just '
             'messages. Blocks should be created through Seng. Blocks should '
@@ -87,7 +88,8 @@ class GetHelp(commands.Cog):
             'option when making a welcome_blolck, and **paste** a **Discord**'
             ' link of the media.'
         )
-        await ctx.send(help_string)
+        await ctx.send(help_string1)
+        await ctx.send(help_string2)
 
     @commands.command()
     async def m_help_stats(self, ctx):
