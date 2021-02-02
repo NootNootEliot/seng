@@ -584,7 +584,7 @@ class Welcome(commands.Cog):
             length = len(blocks)
 
         # Check that the integer is within the correct bounds
-        if (int(pos.content) < 1) or (int(pos.content) > length + 1):
+        if (int(pos) < 1) or (int(pos) > length + 1):
             await ctx.send(
                 'Please enter an integer number between 1 and the length of '
                 'the welcome block queue (plus one).\nCancelling.'
