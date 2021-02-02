@@ -256,7 +256,7 @@ class Welcome(commands.Cog):
             return
         if not await is_mod_commands_channel(ctx):
             return
-        if not await is_process_and_user_clear(self.bot, 'm_edit_wb',
+        if not await is_process_and_user_clear(self.bot, 'm_duplicate_wb',
                                                ctx.author.id):
             return
         # Add user to the process
@@ -284,6 +284,55 @@ class Welcome(commands.Cog):
         shutil.copyfile(block_src, block_dst)
         await ctx.send('Copied file.')
         self.bot.processes['m_duplicate_wb'] = None
+
+    @commands.command()
+    async def m_rename_wb(self, ctx):
+        if not await is_moderator(ctx):
+            return
+        if not await is_mod_commands_channel(ctx):
+            return
+        if not await is_process_and_user_clear(self.bot, 'm_rename_wb',
+                                               ctx.author.id):
+            return
+        # Add user to the process
+        self.bot.processes['m_rename_wb'] = ctx.author.id
+
+        # Get the message containing the block to rename
+        rename_block_msg = await self.get_block_name(ctx)
+        if await self.is_wanting_cancel(add_block_msg, 'm_rename_wb'):
+            return
+
+        # Make sure that the block wanting to be duplicated exists
+        does_block_exist = check_block_exists(rename_block_msg)
+        if not does_block_exist:
+            await ctx.send('I could not find that block! Cancelling.')
+            self.bot.processes['m_rename_wb'] = None
+            return
+        
+        # Ask for the new name
+        def check(m):
+            return (
+                asyncless_is_mod_commands_channel(m) and
+                m.author.id == author_id and
+                not m.content.startswith('$m')
+            )
+
+        await ctx.send('Please enter a new name for this block.')
+        new_name_msg = await self.bot.wait_for('messsage', check=check)
+        if await self.is_wanting_cancel(new_name_msg, 'm_rename_wb'):
+            return
+        
+        
+        # Duplicate the welcome block
+        block_src = rename_block_msg.content
+        block_dst = new_name_msg.content
+        await ctx.send('Renaming {} to {}.'.format(block-src, block_dst))
+
+        block_src = os.path.join('server_specific/welcome_blocks', block_src)
+        block_dst = os.path.join('server_specific/welcome_blocks', block_dst)
+        os.replace(block_src, block_dst)
+        await ctx.send('Renamed file.')
+        self.bot.processes['m_rename_wb'] = None
 
     @commands.command()
     async def m_edit_wb(self, ctx):
