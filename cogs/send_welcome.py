@@ -33,7 +33,7 @@ class Welcome(commands.Cog):
             )
 
         # Get the message containing the block to add
-        await ctx.send('What is the name of the block? Alternatively, write'
+        await ctx.send('What is the name of the block? Alternatively, write '
                        '\'cancel\' to cancel.')
         return await self.bot.wait_for('message', check=check)
 
