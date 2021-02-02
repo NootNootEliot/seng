@@ -671,10 +671,14 @@ class Welcome(commands.Cog):
                 'server_specific/welcome_blocks',
                 block + '.json'
             )
-            with open(Path(block_path), 'r') as block_file:
-                data_dict = json.loads(block_file.read())
-
-            await self.send_block(data_dict, ctx)
+            try:
+                with open(Path(block_path), 'r') as block_file:
+                    data_dict = json.loads(block_file.read())
+                    await self.send_block(data_dict, ctx)
+            except:
+                await ctx.send(
+                    'Warning: Could not find {}. Perhaps it has been '
+                    'renamed?'.format(block))
 
     @commands.command()
     async def m_publish_welcome_message(self, ctx):
