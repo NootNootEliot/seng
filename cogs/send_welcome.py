@@ -90,17 +90,16 @@ class Welcome(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
 
-        author_id = ctx.author.id
         if not await is_process_and_user_clear(self.bot, 'm_make_wb',
-                                               author_id):
+                                               ctx):
             return
         # Add user to the process
-        self.bot.processes['m_make_wb'] = author_id
+        self.bot.processes['m_make_wb'] = ctx.author.id
 
         def check(m):
             return (
                 asyncless_is_mod_commands_channel(m) and
-                m.author.id == author_id and
+                m.author.id == ctx.author.id and
                 not m.content.startswith('$m')
             )
 
@@ -218,12 +217,11 @@ class Welcome(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
 
-        author_id = ctx.author.id
         if not await is_process_and_user_clear(self.bot, 'm_remove_wb',
-                                               author_id):
+                                               ctx):
             return
         # Add user to the process
-        self.bot.processes['m_remove_wb'] = author_id
+        self.bot.processes['m_remove_wb'] = ctx.author.id
 
         # Get the message containing the block name to delete
         del_block_msg = await self.get_block_name()
@@ -249,7 +247,7 @@ class Welcome(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
         if not await is_process_and_user_clear(self.bot, 'm_duplicate_wb',
-                                               ctx.author.id):
+                                               ctx):
             return
         # Add user to the process
         self.bot.processes['m_duplicate_wb'] = ctx.author.id
@@ -284,7 +282,7 @@ class Welcome(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
         if not await is_process_and_user_clear(self.bot, 'm_rename_wb',
-                                               ctx.author.id):
+                                               ctx):
             return
         # Add user to the process
         self.bot.processes['m_rename_wb'] = ctx.author.id
@@ -334,7 +332,7 @@ class Welcome(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
         if not await is_process_and_user_clear(self.bot, 'm_edit_wb',
-                                               ctx.author.id):
+                                               ctx):
             return
         # Add user to the process
         self.bot.processes['m_edit_wb'] = ctx.author.id
@@ -420,7 +418,7 @@ class Welcome(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
         if not await is_process_and_user_clear(self.bot, 'm_preview_wb',
-                                               ctx.author.id):
+                                               ctx):
             return False
         self.bot.processes['m_preview_wb'] = ctx.author.id
 
@@ -495,7 +493,7 @@ class Welcome(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
         if not await is_process_and_user_clear(self.bot, 'm_add_wb_to_queue',
-                                               ctx.author.id):
+                                               ctx):
             return
         # Add user to the process
         self.bot.processes['m_add_wb_to_queue'] = ctx.author.id
@@ -529,7 +527,7 @@ class Welcome(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
         if not await is_process_and_user_clear(self.bot, 'm_add_wb_to_queue',
-                                               ctx.author.id):
+                                               ctx):
             return
 
         # Add user to the process
@@ -615,7 +613,7 @@ class Welcome(commands.Cog):
             return
         if not await is_process_and_user_clear(self.bot,
                                                'm_remove_wb_from_queue',
-                                               ctx.author.id):
+                                               ctx):
             return
         # Add user to the process
         self.bot.processes['m_remove_wb_from_queue'] = ctx.author.id
@@ -677,7 +675,7 @@ class Welcome(commands.Cog):
             return
         if not await is_process_and_user_clear(self.bot,
                                                'm_publish_welcome_message',
-                                               ctx.author.id):
+                                               ctx):
             return
         self.bot.processes['m_publish_welcome_message'] = ctx.author.id
 
