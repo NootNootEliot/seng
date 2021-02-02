@@ -87,7 +87,7 @@ class MuteMember(commands.Cog):
 
         # Check if the user is already Muted or not
         isMuted = False
-        for role in user.roles:
+        for role in member.roles:
             if 'Muted' == role.name:
                 isMuted = True
 
