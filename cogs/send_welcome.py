@@ -43,7 +43,7 @@ class Welcome(commands.Cog):
         for welcome_block in os.listdir('server_specific/welcome_blocks'):
             if welcome_block.startswith('_'):  # Ignore _block_queue
                 continue
-            if add_block_msg.content == welcome_block.replace('.json', ''):
+            if block_message.content == welcome_block.replace('.json', ''):
                 does_block_exist = True
         return does_block_exist
 
