@@ -28,7 +28,7 @@ class Welcome(commands.Cog):
         def check(m):
             return (
                 asyncless_is_mod_commands_channel(m) and
-                m.author.id == author_id and
+                m.author.id == ctx.author.id and
                 not m.content.startswith('$m')
             )
 
@@ -303,7 +303,7 @@ class Welcome(commands.Cog):
         def check(m):
             return (
                 asyncless_is_mod_commands_channel(m) and
-                m.author.id == author_id and
+                m.author.id == ctx.author.id and
                 not m.content.startswith('$m')
             )
 
@@ -370,7 +370,7 @@ class Welcome(commands.Cog):
             def check(m):
                 return (
                     asyncless_is_mod_commands_channel(m) and
-                    m.author.id == author_id and
+                    m.author.id == ctx.author.id and
                     not m.content.startswith('$m')
                 )
 
@@ -551,7 +551,7 @@ class Welcome(commands.Cog):
         def check(m):
             return (
                 asyncless_is_mod_commands_channel(m) and
-                m.author.id == author_id and
+                m.author.id == ctx.author.id and
                 not m.content.startswith('$m')
             )
 
