@@ -598,9 +598,12 @@ class Welcome(commands.Cog):
 
         # Rewrite the queue, inserting the block
         with open(block_queue_path, 'a') as block_queue_file:
+            # If blocks is empty, then we write the insert at position one
+            if not blocks:
+                block_queue_file.write(insert_block_msg.content + '\n')
             for counter, block in enumerate(blocks):
                 # Check to insert the block
-                if counter + 1 == int(pos.content):
+                if counter + 1 == int(pos):
                     block_queue_file.write(insert_block_msg.content + '\n')
                 block_queue_file.write(block + '\n')
         await ctx.send('Block inserted.')
