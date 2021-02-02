@@ -12,6 +12,7 @@ from cogs.member_stats import MemberStats
 from cogs.member_roles import MemberRoles
 from cogs.channel_stats import ChannelStats
 from cogs.seng_info import PrivacyPolicy
+from cogs.mute_member import MuteMember
 
 intents = discord.Intents.all()
 
@@ -42,4 +43,5 @@ bot.add_cog(ModeratorChecking(bot))
 bot.add_cog(GetHelp(bot))
 bot.add_cog(Processes(bot))
 bot.add_cog(PrivacyPolicy(bot))
+bot.add_cog(MuteMember(bot))
 bot.run(token)
