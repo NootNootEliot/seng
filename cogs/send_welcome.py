@@ -267,10 +267,12 @@ class Welcome(commands.Cog):
         # Duplicate the welcome block
         block_src = duplicate_block_msg.content
         block_dst = duplicate_block_msg.content + '_copy'
-        await ctx.send('Copying {} to {}.'.format(block-src, block_dst))
+        await ctx.send('Copying {} to {}.'.format(block_src, block_dst))
 
-        block_src = os.path.join('server_specific/welcome_blocks', block_src)
-        block_dst = os.path.join('server_specific/welcome_blocks', block_dst)
+        block_src = os.path.join('server_specific/welcome_blocks', 
+                                 block_src + '.json')
+        block_dst = os.path.join('server_specific/welcome_blocks',
+                                 block_dst + '.json')
         shutil.copyfile(block_src, block_dst)
         await ctx.send('Copied file.')
         self.bot.processes['m_duplicate_wb'] = None
