@@ -50,7 +50,7 @@ class GetHelp(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
 
-        help_string = (
+        help_string1 = (
             'Below are the commands for the welcome block functionality. Note '
             'that the \'walkthrough processes\' can be cancelled at any time '
             'by writing \'cancel\'.\n'
@@ -60,21 +60,31 @@ class GetHelp(commands.Cog):
             'welcome block.\n'
             '`m_remove_wb` - Begin the walkthrough process of instructing '
             'Seng to delete a welcome block.\n'
+            '`m_edit_wb` - Begin the walkthrough process of editing a welcome '
+            'block.\n'
+            '`m_duplicate_wb` - Begin the walkthrough process of duplicating '
+            'a welcome block in storage.\n'
+            '`m_rename_wb` - Begin the walkthrough process of renaming a '
+            'welcome block in storage.\n'
             '`m_preview_wb` - Begin the walkthrough process of previewing '
             'a single welcome block. Lets you see what it will look like!\n'
             '`m_view_wb_queue` - List the names of all welcome blocks that '
-            'are currently in the welcome blolck queue.\n'
+            'are currently in the welcome block queue.\n'
             '`m_add_wb_to_queue` - Begin the walkthrough process of adding a '
-            'welcome block to the queue.\n'
+            'welcome block to the end of the queue.\n'
+            '`m_insert_wb_in_queue` - Begin the walkthrough procecss of '
+            'inserting a welcome block at a position in the queue.\n'
             '`m_remove_wb_from_queue` - Begin the walkthrough process of '
             'removing a welcome block from queue.\n'
+            '`m_clear_wb_queue` - Clears the welcome block queue.\n'
             '`m_see_draft_welcome_message` - Seng will send the welcome '
             'messages, but in the mod-commands channel, so you can see '
             'what it will look like.\n'
             '`m_publish_welcome_message` - Seng will send the welcome '
             'messages, which correspond to those in the queue, to the '
-            'welcome channel.\n\n'
-            ''
+            'welcome channel.'
+        )
+        help_string2 = (
             'To send a welcome message, it is first desirable to build the '
             'message out of \'blocks\', where \'blocks\' are effectively just '
             'messages. Blocks should be created through Seng. Blocks should '
@@ -86,7 +96,8 @@ class GetHelp(commands.Cog):
             'option when making a welcome_blolck, and **paste** a **Discord**'
             ' link of the media.'
         )
-        await ctx.send(help_string)
+        await ctx.send(help_string1)
+        await ctx.send(help_string2)
 
     @commands.command()
     async def m_help_stats(self, ctx):
