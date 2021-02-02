@@ -23,7 +23,7 @@ class Welcome(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def get_block_name(self):
+    async def get_block_name(self, ctx):
         """Return the message containing the block name to do something with"""
         def check(m):
             return (
@@ -224,7 +224,7 @@ class Welcome(commands.Cog):
         self.bot.processes['m_remove_wb'] = ctx.author.id
 
         # Get the message containing the block name to delete
-        del_block_msg = await self.get_block_name()
+        del_block_msg = await self.get_block_name(ctx)
         if await self.is_wanting_cancel(del_block_msg, 'm_remove_wb'):
             return
 
