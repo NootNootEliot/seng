@@ -10,6 +10,7 @@ class HallOfStars(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.is_recording = False
+        self.msg_dict = {}
 
     def get_guild(self):
         """Returns the guild object"""
@@ -22,20 +23,15 @@ class HallOfStars(commands.Cog):
     async def record_baseline(self):
         guild = self.get_guild()
 
-        with open('./server_specific/mem_msg_count.json', 'w') as count_file:
-            msg_dict = {}
-            # Loop through every text channel in the guild
-            for channel in guild.text_channels:
-                # Loop through every message in the text channel
-                async for msg in channel.history(limit=None):
-                    # Check if that Member's already in the dictionary
-                    if msg.author.id in msg_dict:
-                        msg_dict[msg.author.id] = msg_dict[msg.author.id] + 1
-                    else:
-                        msg_dict[msg.author.id] = 1
-            
-            # Save the Member message file in JSON format
-            count_file.write(json.dumps(msg_dict))
+        # Loop through every text channel in the guild
+        for channel in guild.text_channels:
+            # Loop through every message in the text channel
+            async for msg in channel.history(limit=None):
+                # Check if that Member's already in the dictionary
+                if msg.author.id in self.msg_dict:
+                    self.msg_dict[msg.author.id] += 1
+                else:
+                    self.msg_dict[msg.author.id] = 1
 
     # Start the message counting
     @commands.command()
@@ -51,7 +47,8 @@ class HallOfStars(commands.Cog):
         
         self.is_recording = True
         self.hos_update.start()
-        await ctx.send('Started recording.')
+        self.save_msg_dict.start()
+        await ctx.send('Started recording and saving.')
     
     # Stop the message counting
     @commands.command()
@@ -62,12 +59,13 @@ class HallOfStars(commands.Cog):
             return
 
         if not self.is_recording:
-            await ctx.send('I\'m already not recording!')
+            await ctx.send('I\'m already not recording/saving!')
             return
         
         self.is_recording = False
         self.hos_update.cancel()
-        await ctx.send('Stopped recording.')
+        self.save_msg_dict.close()
+        await ctx.send('Stopped recording and saving.')
     
     # Outputs if messages are being recorded or not
     @commands.command()
@@ -78,18 +76,17 @@ class HallOfStars(commands.Cog):
             return
         
         if self.is_recording:
-            await ctx.send('I am recording!')
+            await ctx.send('I am recording and saving!')
         else:
-            await ctx.send('I am not recording!')
+            await ctx.send('I am not recording/saving!')
     
     # Listen to messages, and adds them to the file
     @commands.Cog.listener()
     async def on_message(self, msg):
-        with open('./server_specific/mem_msg_count.json', 'w') as count_file:
-            if msg.author.id in msg_dict:
-                msg_dict[msg.author.id] = msg_dict[msg.author.id] + 1
-            else:
-                msg_dict[msg.author.id] = 1
+        if msg.author.id in self.msg_dict:
+            self.msg_dict[msg.author.id] += 1
+        else:
+            self.msg_dict[msg.author.id] = 1
 
     # Force the Hall of Stars channel to update
     @commands.command()
@@ -100,3 +97,10 @@ class HallOfStars(commands.Cog):
     @tasks.loop(seconds=43200)
     async def hos_update(self):
         pass
+    
+    # Save the data to a text f ile
+    @tasks.loop(seconds=3600)
+    async def save_msg_dict(self):
+        # Every hour, save the msg dictionary to the count file
+        with open('./server_specific/count_file.json', 'w') as count_file:
+            count_file.write(json.dumps(self.msg_dict))
