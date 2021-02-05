@@ -82,6 +82,15 @@ class HallOfStars(commands.Cog):
         else:
             await ctx.send('I am not recording!')
     
+    # Listen to messages, and adds them to the file
+    @commands.Cog.listener()
+    async def on_message(self, msg):
+        with open('./server_specific/mem_msg_count.json', 'w') as count_file:
+            if msg.author.id in msg_dict:
+                msg_dict[msg.author.id] = msg_dict[msg.author.id] + 1
+            else:
+                msg_dict[msg.author.id] = 1
+
     # Force the Hall of Stars channel to update
     @commands.command()
     async def m_hos_force_update(self):
