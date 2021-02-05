@@ -69,11 +69,6 @@ class HallOfStars(commands.Cog):
         self.hos_update.cancel()
         await ctx.send('Stopped recording.')
     
-    # Restart the message counting
-    @commands.command()
-    async def m_hos_restart(self):
-        pass
-    
     # Outputs if messages are being recorded or not
     @commands.command()
     async def m_hos_status(self):
