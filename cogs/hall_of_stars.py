@@ -33,7 +33,7 @@ class HallOfStars(commands.Cog):
                 else:
                     self.msg_dict[msg.author.id] = 1
 
-    # Start the message counting
+    # Start the message counting - loads in existing count file
     @commands.command()
     async def m_hos_start(self, ctx):
         if not await is_moderator(ctx):
@@ -45,6 +45,39 @@ class HallOfStars(commands.Cog):
             await ctx.send('I\'m already recording!')
             return
         
+        # Reset the msg_dict to be empty
+        self.msg_dict = {}
+
+        # Check if count file exists. If it does, start from those values
+        if os.path.exists('./server_specific/count_file.json'):
+            with open('./server_specific/count_file.json', 'r') as count_file:
+                self.msg_dict = json.loads(count_file.read())
+
+        self.is_recording = True
+        self.hos_update.start()
+        self.save_msg_dict.start()
+        await ctx.send('Started recording and saving.')
+    
+    # Generates completely new (and potentially more accurate data) but takes
+    # longer
+    @commands.command()
+    async def m_hos_fresh_start(self, ctx):
+        if not await is_moderator(ctx):
+            return
+        if not await is_mod_commands_channel(ctx):
+            return
+
+        if self.is_recording:
+            await ctx.send('I\'m already recording!')
+            return
+        
+        # Reset the msg dictionary to nothing
+        self.msg_dict = {}
+
+        # Record all data from the start of the Discord server afresh
+        await ctx.send('Re-building data.')
+        self.record_baseline()
+
         self.is_recording = True
         self.hos_update.start()
         self.save_msg_dict.start()
@@ -63,6 +96,8 @@ class HallOfStars(commands.Cog):
             return
         
         self.is_recording = False
+        # Save the dictionary so as to not lose stats hen starting up again
+        self.save_msg_dict()
         self.hos_update.cancel()
         self.save_msg_dict.close()
         await ctx.send('Stopped recording and saving.')
