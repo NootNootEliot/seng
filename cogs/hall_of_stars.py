@@ -9,6 +9,7 @@ import json
 class HallOfStars(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.recording_status = False
 
     def get_guild(self):
         """Returns the guild object"""
@@ -38,13 +39,35 @@ class HallOfStars(commands.Cog):
 
     # Start the message counting
     @commands.command()
-    async def m_hos_start(self):
-        pass
+    async def m_hos_start(self, ctx):
+        if not await is_moderator(ctx):
+            return
+        if not await is_mod_commands_channel(ctx):
+            return
+
+        if self.recording_status:
+            await ctx.send('I\'m already recording!')
+            return
+        
+        self.recording_status = True
+        self.hos_update.start()
+        await ctx.send('Started recording.')
     
     # Stop the message counting
     @commands.command()
     async def m_hos_stop(self):
-        pass
+        if not await is_moderator(ctx):
+            return
+        if not await is_mod_commands_channel(ctx):
+            return
+
+        if not self.recording_status:
+            await ctx.send('I\'m already not recording!')
+            return
+        
+        self.recording_status = False
+        self.hos_update.cancel()
+        await ctx.send('Stopped recording.')
     
     # Restart the message counting
     @commands.command()
