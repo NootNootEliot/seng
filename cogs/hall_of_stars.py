@@ -72,7 +72,15 @@ class HallOfStars(commands.Cog):
     # Outputs if messages are being recorded or not
     @commands.command()
     async def m_hos_status(self):
-        pass
+        if not await is_moderator(ctx):
+            return
+        if not await is_mod_commands_channel(ctx):
+            return
+        
+        if self.recording_status:
+            await ctx.send('I am recording!')
+        else:
+            await ctx.send('I am not recording!')
     
     # Force the Hall of Stars channel to update
     @commands.command()
