@@ -1,13 +1,40 @@
 from discord.ext import commands
+from .validation import (is_moderator, is_mod_commands_channel,
+                         asyncless_is_moderator,
+                         asyncless_is_mod_commands_channel,
+                         is_process_and_user_clear)
+import json
 
 
 class HallOfStars(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    
+
+    def get_guild(self):
+        """Returns the guild object"""
+        with open('./server_specific/channel_ids.json', 'r') as id_file:
+            channel_id_dict = json.loads(id_file.read())
+        guild_id = channel_id_dict['GUILD']
+        return self.bot.get_guild(guild_id)
+
     # Record the message count for each Member in server history
     async def record_baseline(self):
-        pass
+        guild = self.get_guild()
+
+        with open('./server_specific/mem_msg_count.json', 'w') as count_file:
+            msg_dict = {}
+            # Loop through every text channel in the guild
+            for channel in guild.text_channels:
+                # Loop through every message in the text channel
+                async for msg in channel.history(limit=None):
+                    # Check if that Member's already in the dictionary
+                    if msg.author.id in msg_dict:
+                        msg_dict[msg.author.id] = msg_dict[msg.author.id] + 1
+                    else:
+                        msg_dict[msg.author.id] = 1
+            
+            # Save the Member message file in JSON format
+            count_file.write(json.dumps(msg_dict))
 
     # Start the message counting
     @commands.command()
@@ -38,5 +65,3 @@ class HallOfStars(commands.Cog):
     @tasks.loop(seconds=43200)
     async def hos_update(self):
         pass
-
-    
