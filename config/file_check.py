@@ -40,7 +40,8 @@ general_paths = [
     'server_specific/moderators.txt',
     'server_specific/channel_ids.json',
     'server_specific/welcome_blocks/',
-    'server_specific/welcome_blocks/_block_queue'
+    'server_specific/welcome_blocks/_block_queue',
+    'server_specific/count_file.json'
 ]
 
 # Test that the paths above exist
