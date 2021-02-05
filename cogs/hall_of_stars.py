@@ -9,7 +9,7 @@ import json
 class HallOfStars(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.recording_status = False
+        self.is_recording = False
 
     def get_guild(self):
         """Returns the guild object"""
@@ -45,11 +45,11 @@ class HallOfStars(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
 
-        if self.recording_status:
+        if self.is_recording:
             await ctx.send('I\'m already recording!')
             return
         
-        self.recording_status = True
+        self.is_recording = True
         self.hos_update.start()
         await ctx.send('Started recording.')
     
@@ -61,11 +61,11 @@ class HallOfStars(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
 
-        if not self.recording_status:
+        if not self.is_recording:
             await ctx.send('I\'m already not recording!')
             return
         
-        self.recording_status = False
+        self.is_recording = False
         self.hos_update.cancel()
         await ctx.send('Stopped recording.')
     
@@ -77,7 +77,7 @@ class HallOfStars(commands.Cog):
         if not await is_mod_commands_channel(ctx):
             return
         
-        if self.recording_status:
+        if self.is_recording:
             await ctx.send('I am recording!')
         else:
             await ctx.send('I am not recording!')
