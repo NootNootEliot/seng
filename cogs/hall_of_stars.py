@@ -32,6 +32,13 @@ class HallOfStars(commands.Cog):
                     self.msg_dict[msg.author.id] += 1
                 else:
                     self.msg_dict[msg.author.id] = 1
+    
+    # Start recording and saving
+    async def start_rec_sav(self, ctx):
+        self.is_recording = True
+        self.hos_update.start()
+        self.save_msg_dict.start()
+        await ctx.send('Started recording and saving.')
 
     # Start the message counting - loads in existing count file
     @commands.command()
@@ -53,10 +60,7 @@ class HallOfStars(commands.Cog):
             with open('./server_specific/count_file.json', 'r') as count_file:
                 self.msg_dict = json.loads(count_file.read())
 
-        self.is_recording = True
-        self.hos_update.start()
-        self.save_msg_dict.start()
-        await ctx.send('Started recording and saving.')
+        start_rec_save(ctx)
     
     # Generates completely new (and potentially more accurate data) but takes
     # longer
@@ -78,10 +82,7 @@ class HallOfStars(commands.Cog):
         await ctx.send('Re-building data.')
         self.record_baseline()
 
-        self.is_recording = True
-        self.hos_update.start()
-        self.save_msg_dict.start()
-        await ctx.send('Started recording and saving.')
+        start_rec_save(ctx)
     
     # Stop the message counting
     @commands.command()
