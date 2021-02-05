@@ -87,7 +87,8 @@ expected_keys = [
     'GUILD',
     'MOD_COMMANDS',
     'WELCOME',
-    'MEET_OUR_MEMBERS'
+    'MEET_OUR_MEMBERS',
+    "HALL_OF_STARS"
 ]
 
 # Get the dictionary
