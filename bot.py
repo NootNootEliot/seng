@@ -28,6 +28,22 @@ bot.processes = {}
 async def on_ready():
     print("Ready to go!")
 
+    # Get Seng's ID
+    # Get the mod-commands channel
+    with open('server_specific/channel_ids.json', 'r') as id_file:
+        channel_id_dict = json.loads(id_file.read())
+        guild_id = channel_id_dict['GUILD']
+        mod_commands_id = channel_id_dict['MOD_COMAMANDS']
+    guild = self.bot.get_guild(guild_id)
+    mod_commands_channel = guild.get_channel(mod_commands_id)
+
+    # Send a message to the mod-commands channel
+    msg = await mod_commands_channel.send('I am online!')
+    
+    # Store Seng's ID in a bot constant
+    bot.my_id = msg.author.id
+
+
 # Read in the token.
 with open(Path('./private/priv_data.json'), 'r') as data_file:
     token = json.loads(data_file.read())['TOKEN']
